@@ -23,8 +23,10 @@ int main(int arcg, char* argv[]) {
 
     Probleme pb;
 
-    // chargerProbleme(&pb, "Instances/Beasley/cap64.dat");
-    chargerProbleme(&pb, "Instances/jouet.dat");
+    // chargerProbleme(&pb, "Instances/Areizaga/p1.dat");
+    chargerProbleme(&pb, "Instances/Beasley/cap132.dat");
+    // chargerProbleme(&pb, "Instances/Yang/60-300-1.dat");
+    // chargerProbleme(&pb, "Instances/jouet.dat");
 
     // afficherProbleme(&pb);
 
@@ -56,8 +58,8 @@ void resoudre(Probleme* pb) {
     for(int i = 1; i <= pb->m; i++) {
         glp_set_row_bnds(prob, i, GLP_UP, 0.0, 0.0);
     }
-    for(int i = pb->m+1; i <= pb->n; i++) {
-        glp_set_row_bnds(prob, i, GLP_FX, 1.0, 1.0);
+    for(int i = 1; i <= pb->n; i++) {
+        glp_set_row_bnds(prob, pb->m+i, GLP_FX, 1.0, 1.0);
     }
 
     // variables du problèmes, toutes binaires
@@ -104,10 +106,12 @@ void resoudre(Probleme* pb) {
 
     glp_load_matrix(prob, nbCreux, ia, ja, ar);
 
+    // glp_write_lp(prob,NULL,"modele.lp");
+
     glp_simplex(prob, NULL);
     glp_intopt(prob, NULL);
 
-    printf("Valeur optimale : %d\n", glp_mip_obj_val(prob));
+    printf("Valeur optimale : %f\n", glp_mip_obj_val(prob));
 
     free(ia);
     free(ja);
