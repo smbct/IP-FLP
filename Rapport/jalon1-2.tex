@@ -15,13 +15,13 @@ Sous forme de programme linéaire :
 
 \begin{align*}
 x_{ij} &= \begin{cases}
-        1, \text{si le client j est affecté au service i}\\
-        0, \text{sinon} \\
+        1 \text{ si le client j est affecté au service i}\\
+        0 \text{ sinon} \\
     \end{cases}
 &&i \in \{1..m\}, j \in \{1,..,n\} \\
 y_i &= \begin{cases}
-        1, \text{si le service i est ouvert}\\
-        0, \text{sinon} \\
+        1 \text{ si le service i est ouvert}\\
+        0 \text{ sinon} \\
     \end{cases}
 &&i \in \{1,..,m\}
 \end{align*}
@@ -45,7 +45,7 @@ $ \sum \limits_{i=1}^n x_{ij} \geq 1 \quad \forall j \in \{1,..,m\}$
 Dans le problème UFLP (Uncapacited Facility Location Problem), les clients peuvent encore une fois être reliés à plus d'un service. De plus, il n'y a plus de contrainte de capacité.
 La deuxième contrainte du SSCFLP devient est remplacée par la contrainte du CFLP.
 La première contrainte est retirée et est remplacée par
-$ x_{ij} \leq y_i \forall j \in \{1,..,m\}$. De ce fait, si au moins un client est relié au service i, alors ce service sera indiqué comme étant ouvert.
+$ x_{ij} \leq y_i \quad \forall j \in \{1,..,m\}$. De ce fait, si au moins un client est relié au service i, alors ce service sera indiqué comme étant ouvert.
 
 
 \section{Choix des instances}
@@ -60,4 +60,7 @@ Ces instance permettent donc de comparer l'effcicacité des méthode de résolut
 Parmis les instances de Beasley, 2 instances avec large coefficients ont également été sélectionnées les instances capa1 et capb1 qui ont décrivent 100 services et 1000 clients. \newline
 
 Enfin, des instances de très grande taille ont été choisies parmis les instances de Yang : une instance de 60 services et 300 clients et une instance de 80 services et 400 clients.
-Ces instances sont fournis avec les solutions exactes, ce qui permet de comparer les meilleures valeurs retournées par le solver dans le cas où il ne termine pas en temps résonable.
+Ces instances sont fournis avec les solutions exactes, ce qui permet de comparer les meilleures valeurs retournées par le solver dans le cas où il ne termine pas en temps raisonable. \newline
+
+Un unique parser a été fait dans le programme pour charger des instances au format OR LIBRARY seulement.
+Etant donné que les instances de Areizaga ne sont pas dans le même format, un petit convertisseur écrit en julia a été réalisé. Le programme ne traite donc que des instances au format OR LIBRARY.
