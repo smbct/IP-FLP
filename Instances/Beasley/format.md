@@ -1,3 +1,4 @@
+format OR-LIBRARY
 nbServices nbClients
 capacité services i ; cout service i
 .
