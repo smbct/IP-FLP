@@ -61,7 +61,8 @@ nom2 = split(nom, ".")[1]
 nom2 = nom2*".dat"
 sortie = open(nom2, "w")
 
-println(sortie, nbServices)
+print(sortie, nbServices)
+print(sortie, " ")
 println(sortie, nbClients)
 
 # enregistrement capacité/coûts pour les services
