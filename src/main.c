@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
 
     Probleme pb;
 
-    chargerProbleme(&pb, "Instances/Beasley/cap64");
+    chargerProbleme(&pb, "Instances/Beasley/cap64.dat");
 
     afficherProbleme(&pb);
 
