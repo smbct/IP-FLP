@@ -1,4 +1,4 @@
-for fichier in Beasley/*
+for fichier in Holmberg/*
 do
     mv $fichier $fichier.dat
 done

@@ -23,8 +23,9 @@ int main(int arcg, char* argv[]) {
 
     Probleme pb;
 
-    // chargerProbleme(&pb, "Instances/Areizaga/p1.dat");
-    chargerProbleme(&pb, "Instances/Beasley/cap132.dat");
+    // chargerProbleme(&pb, "Instances/Areizaga/p28.dat");
+    // chargerProbleme(&pb, "Instances/Beasley/cap103.dat");
+    chargerProbleme(&pb, "Instances/Holmberg/p14");
     // chargerProbleme(&pb, "Instances/Yang/60-300-1.dat");
     // chargerProbleme(&pb, "Instances/jouet.dat");
 
