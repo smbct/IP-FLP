@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include <glpk.h>
 
@@ -25,13 +26,20 @@ int main(int arcg, char* argv[]) {
 
     // chargerProbleme(&pb, "Instances/Areizaga/p28.dat");
     // chargerProbleme(&pb, "Instances/Beasley/cap103.dat");
-    chargerProbleme(&pb, "Instances/Holmberg/p14");
+    chargerProbleme(&pb, "Instances/Holmberg/p1.dat");
     // chargerProbleme(&pb, "Instances/Yang/60-300-1.dat");
     // chargerProbleme(&pb, "Instances/jouet.dat");
 
     // afficherProbleme(&pb);
 
+    clock_t begin, end;
+    begin = clock();
     resoudre(&pb);
+    end = clock();
+    double temps = (double)(end - begin) / CLOCKS_PER_SEC;
+    temps *= 1000;
+
+    printf("temps : %lf ms\n", temps);
 
     detruireProblem(&pb);
 
@@ -41,10 +49,18 @@ int main(int arcg, char* argv[]) {
 //------------------------------------------------------------------------------
 void resoudre(Probleme* pb) {
 
+    //désactivation du log de glpk
+    glp_term_out(0);
+
     glp_prob* prob;
     prob = glp_create_prob();
     glp_set_prob_name(prob, "SSCFLP");
     glp_set_obj_dir(prob, GLP_MIN);
+
+    // timer glpk
+    glp_iocp param;
+    glp_init_iocp(&param);
+    param.tm_lim = 1000*60*5; // valeur en ms
 
     int nbVar = (pb->n+1)*pb->m;
     int nbCont = pb->m + pb->n;
@@ -110,9 +126,15 @@ void resoudre(Probleme* pb) {
     // glp_write_lp(prob,NULL,"modele.lp");
 
     glp_simplex(prob, NULL);
-    glp_intopt(prob, NULL);
+    int res = glp_intopt(prob, &param);
 
-    printf("Valeur optimale : %f\n", glp_mip_obj_val(prob));
+    if(res == GLP_ETMLIM) {
+        printf("limite de temps atteinte :(\n");
+    } else {
+        printf("Valeur optimale : %f\n", glp_mip_obj_val(prob));
+    }
+
+    glp_delete_prob(prob);
 
     free(ia);
     free(ja);
