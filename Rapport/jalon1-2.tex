@@ -64,3 +64,13 @@ Ces instances sont fournis avec les solutions exactes, ce qui permet de comparer
 
 Un unique parser a été fait dans le programme pour charger des instances au format OR LIBRARY seulement.
 Etant donné que les instances de Areizaga ne sont pas dans le même format, un petit convertisseur écrit en julia a été réalisé. Le programme ne traite donc que des instances au format OR LIBRARY.
+
+\section{Solver générique}
+
+\subsection{Solver utilisé}
+
+C'est le solver glpk qui a été utilisé, interfacé en c, pour résoudre les instances de SSCFLP.
+
+\subsection{Temps obtenus}
+
+Voici les temps obtenus avec glpk pour les instances choisies :
