@@ -2,7 +2,7 @@
 CC= gcc
 CFLAGS= -std=c99 -pedantic -Wfatal-errors -Wconversion -Wredundant-decls -Wshadow -Wall -Wextra -O3 -Ofast #-pg
 
-OBJECTS_FILES= src/probleme.o src/solution.o src/resolution.o
+OBJECTS_FILES= src/probleme.o src/solution.o src/resolution.o src/bornes.o
 
 rapport:
 	pdflatex Rapport/rapport
@@ -13,7 +13,7 @@ main: src/main.c $(OBJECTS_FILES)
 solverGlpk: src/solverGlpk.c $(OBJECTS_FILES)
 	$(CC) $(CFLAGS) src/solverGlpk.c $(OBJECTS_FILES) -lglpk -o solverGlpk
 
-# Compilation des fichier object
+# Compilation des fichiers object
 %.o: %.c %.h
 	$(CC) $(CFLAGS) $< -c -o $@
 

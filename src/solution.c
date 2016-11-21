@@ -4,6 +4,8 @@
  */
 
 #include "solution.h"
+#include "stdio.h"
+#include "stdlib.h"
 
 //------------------------------------------------------------------------------
 void creerSolution(Probleme* pb, Solution* sol) {
