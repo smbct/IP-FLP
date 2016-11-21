@@ -15,39 +15,39 @@
  * \brief résolution de l'instance à l'aide de glpk
  * \param pb l'instance du problème à résoudre
  */
-void resoudre(Probleme* pb);
+void resoudre(char* instance);
 
 //------------------------------------------------------------------------------
-int main(int arcg, char* argv[]) {
+int main(int argc, char* argv[]) {
 
-    printf("Solver avec glpk\n");
+    // printf("Solver avec glpk\n");
 
-    Probleme pb;
+    if(argc > 1) {
 
-    // chargerProbleme(&pb, "Instances/Areizaga/p28.dat");
-    // chargerProbleme(&pb, "Instances/Beasley/cap103.dat");
-    chargerProbleme(&pb, "Instances/Holmberg/p1.dat");
-    // chargerProbleme(&pb, "Instances/Yang/60-300-1.dat");
-    // chargerProbleme(&pb, "Instances/jouet.dat");
+        printf("%s", argv[1]);
+        clock_t begin, end;
+        begin = clock();
+        resoudre(argv[1]);
+        end = clock();
+        double temps = (double)(end - begin) / CLOCKS_PER_SEC;
+        temps *= 1000;
 
-    // afficherProbleme(&pb);
+        printf(" & %lf\\\\ \n", temps);
 
-    clock_t begin, end;
-    begin = clock();
-    resoudre(&pb);
-    end = clock();
-    double temps = (double)(end - begin) / CLOCKS_PER_SEC;
-    temps *= 1000;
-
-    printf("temps : %lf ms\n", temps);
-
-    detruireProblem(&pb);
+    } else {
+        printf("indiquez une instance en entrée.\n");
+    }
 
     return 0;
 }
 
 //------------------------------------------------------------------------------
-void resoudre(Probleme* pb) {
+void resoudre(char* instance) {
+
+    Probleme pb;
+    chargerProbleme(&pb, instance);
+
+    printf(" $ %d * %d", pb.m, pb.n);
 
     //désactivation du log de glpk
     glp_term_out(0);
@@ -60,23 +60,24 @@ void resoudre(Probleme* pb) {
     // timer glpk
     glp_iocp param;
     glp_init_iocp(&param);
-    param.tm_lim = 1000*60*5; // valeur en ms
+    param.tm_lim = 1000*60*2; // valeur en ms
+    // param.tm_lim = 5000; // valeur en ms
 
-    int nbVar = (pb->n+1)*pb->m;
-    int nbCont = pb->m + pb->n;
+    int nbVar = (pb.n+1)*pb.m;
+    int nbCont = pb.m + pb.n;
 
-    int nbCreux = pb->m*(pb->n+1) + pb->n*pb->m;
+    int nbCreux = pb.m*(pb.n+1) + pb.n*pb.m;
     int* ia = malloc((long unsigned int)(nbCreux+1)*sizeof(int));
     int* ja = malloc((long unsigned int)(nbCreux+1)*sizeof(int));
     double* ar = malloc((long unsigned int)(nbCreux+1)*sizeof(double));
 
     // déclaration des contraintes et des bornes sur celles-ci
     glp_add_rows(prob, nbCont);
-    for(int i = 1; i <= pb->m; i++) {
+    for(int i = 1; i <= pb.m; i++) {
         glp_set_row_bnds(prob, i, GLP_UP, 0.0, 0.0);
     }
-    for(int i = 1; i <= pb->n; i++) {
-        glp_set_row_bnds(prob, pb->m+i, GLP_FX, 1.0, 1.0);
+    for(int i = 1; i <= pb.n; i++) {
+        glp_set_row_bnds(prob, pb.m+i, GLP_FX, 1.0, 1.0);
     }
 
     // variables du problèmes, toutes binaires
@@ -87,35 +88,35 @@ void resoudre(Probleme* pb) {
     }
 
     // coefficients dans la fonction objectif
-    for(int i = 0; i < pb->m; i++) {
-        for(int j = 0; j < pb->n; j++) {
-            glp_set_obj_coef(prob, i*pb->n+j+1, pb->liaisons[i][j]);
+    for(int i = 0; i < pb.m; i++) {
+        for(int j = 0; j < pb.n; j++) {
+            glp_set_obj_coef(prob, i*pb.n+j+1, pb.liaisons[i][j]);
         }
-        glp_set_obj_coef(prob, pb->m*pb->n+i+1, pb->couts[i]);
+        glp_set_obj_coef(prob, pb.m*pb.n+i+1, pb.couts[i]);
     }
 
     // initialisation de la matrice creuse des contraintes
     int indice = 1;
 
     // pour les m services, la capacité n'est pas dépassée
-    for(int i = 0; i < pb->m; i++) {
+    for(int i = 0; i < pb.m; i++) {
         ia[indice] = i+1;
-        ja[indice] = pb->n*pb->m+i+1; // variable y_i
-        ar[indice] = -pb->capacites[i];
+        ja[indice] = pb.n*pb.m+i+1; // variable y_i
+        ar[indice] = -pb.capacites[i];
         indice ++;
-        for(int j = 0; j < pb->n; j++) {
+        for(int j = 0; j < pb.n; j++) {
             ia[indice] = i+1;
-            ja[indice] = i*pb->n+j+1; // variable x_{ij}
-            ar[indice] = pb->demandes[j];
+            ja[indice] = i*pb.n+j+1; // variable x_{ij}
+            ar[indice] = pb.demandes[j];
             indice ++;
         }
     }
 
     // chaque client est connecté à un unique service
-    for(int i = 0; i < pb->n; i++) {
-        for(int j = 0; j < pb->m; j++) {
-            ia[indice] = pb->m+i+1;
-            ja[indice] = j*pb->n+i+1; // variable x_{ji}
+    for(int i = 0; i < pb.n; i++) {
+        for(int j = 0; j < pb.m; j++) {
+            ia[indice] = pb.m+i+1;
+            ja[indice] = j*pb.n+i+1; // variable x_{ji}
             ar[indice] = 1.0;
             indice ++;
         }
@@ -128,10 +129,10 @@ void resoudre(Probleme* pb) {
     glp_simplex(prob, NULL);
     int res = glp_intopt(prob, &param);
 
+    printf(" $ %f", glp_mip_obj_val(prob));
+
     if(res == GLP_ETMLIM) {
-        printf("limite de temps atteinte :(\n");
-    } else {
-        printf("Valeur optimale : %f\n", glp_mip_obj_val(prob));
+        printf("*");
     }
 
     glp_delete_prob(prob);
@@ -139,5 +140,7 @@ void resoudre(Probleme* pb) {
     free(ia);
     free(ja);
     free(ar);
+
+    detruireProblem(&pb);
 
 }

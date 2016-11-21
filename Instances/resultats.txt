@@ -1,0 +1,22 @@
+indiquez une instance en entrée.
+indiquez une instance en entrée.
+indiquez une instance en entrée.
+indiquez une instance en entrée.
+indiquez une instance en entrée.
+indiquez une instance en entrée.
+indiquez une instance en entrée.
+indiquez une instance en entrée.
+indiquez une instance en entrée.
+indiquez une instance en entrée.
+indiquez une instance en entrée.
+indiquez une instance en entrée.
+Bench/Bcap103.dat $ 25 * 50 $ 895592.762500* & 119527.131000\\ 
+Bench/Bcap122.dat $ 50 * 50 $ 871199.737500* & 119920.451000\\ 
+Bench/Bcap64.dat $ 16 * 50 $ 1053197.437500 & 462.846000\\ 
+Bench/Bcap73.dat $ 16 * 50 $ 1010641.450000 & 1941.671000\\ 
+Bench/Bcap94.dat $ 25 * 50 $ 950608.425000 & 63156.697000\\ 
+Bench/Hp14.dat $ 20 * 50 $ 7137.000000 & 8487.260000\\ 
+Bench/Hp15.dat $ 20 * 50 $ 8808.000000 & 3881.686000\\ 
+Bench/Hp20.dat $ 20 * 50 $ 10486.000000 & 5350.699000\\ 
+Bench/Hp22.dat $ 20 * 50 $ 7092.000000 & 10722.105000\\ 
+Bench/Hp23.dat $ 20 * 50 $ 8746.000000 & 5791.466000\\ 
