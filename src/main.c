@@ -14,19 +14,20 @@
 //------------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
 
-    printf("Hello world\n");
 
     Probleme pb;
 
-    // chargerProbleme(&pb, "Instances/Beasley/cap64.dat");
-    chargerProbleme(&pb, "Instances/jouet.dat");
+    chargerProbleme(&pb, "Instances/Holmberg/p1.dat");
+    // chargerProbleme(&pb, "Instances/jouet.dat");
 
-    afficherProbleme(&pb);
+    // afficherProbleme(&pb);
 
     Solution sol;
     creerSolution(&pb, &sol);
 
     construction(&sol);
+
+    afficherSolution(&sol);
 
     detruireSolution(&sol);
 

@@ -13,27 +13,55 @@ void creerSolution(Probleme* pb, Solution* sol) {
     sol->pb = pb;
     sol->nbVarFixees = 0;
 
-    int nbVar = pb->m*(pb->n+1);
-    sol->valeurs = malloc((long unsigned int)nbVar*sizeof(double));
-    for(int i = 0; i < nbVar; i++) {
-        sol->valeurs[i] = 0.;
+    sol->connexions = malloc((long unsigned int)pb->m*sizeof(double));
+    for(int i = 0; i < sol->pb->m; i++) {
+        sol->connexions[i] = malloc((long unsigned int)pb->n*sizeof(double));
+        for(int j = 0; j < pb->n; j++) {
+            sol->connexions[i][j] = 0.;
+        }
     }
+
+    sol->services = malloc((long unsigned int)pb->m*sizeof(double));
+    for(int i = 0; i < pb->m; i++) {
+        sol->services[i] = 0;
+    }
+
+    sol->capaRestantes = malloc((long unsigned int)pb->m*sizeof(double));
+    for(int i = 0; i < pb->m;i++) {
+        sol->capaRestantes[i] = pb->capacites[i];
+    }
+
+    sol->z = 0.;
 
 }
 
 //------------------------------------------------------------------------------
 void afficherSolution(Solution* sol) {
 
-    for(int i = 0; i < sol->pb->m*(sol->pb->n+1); i++) {
-        printf("%lf, ", sol->valeurs[i]);
+    printf("connexions :\n");
+    for(int i = 0; i < sol->pb->m; i++) {
+        for(int j = 0; j < sol->pb->n; j++) {
+            printf("%lf, ", sol->connexions[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\nservices ouverts :\n");
+    for(int i = 0; i < sol->pb->m; i++) {
+        printf("%d, ", sol->services[i]);
     }
     printf("\n");
+    printf("z = %lf\n", sol->z);
 
 }
 
 //------------------------------------------------------------------------------
 void detruireSolution(Solution* sol) {
 
-    free(sol->valeurs);
+    free(sol->capaRestantes);
 
+    for(int i = 0; i < sol->pb->m; i++) {
+        free(sol->connexions[i]);
+    }
+    free(sol->connexions);
+    free(sol->services);
 }

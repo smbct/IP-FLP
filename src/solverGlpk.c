@@ -124,7 +124,7 @@ void resoudre(char* instance) {
 
     glp_load_matrix(prob, nbCreux, ia, ja, ar);
 
-    // glp_write_lp(prob,NULL,"modele.lp");
+    glp_write_lp(prob,NULL,"modele.lp");
 
     glp_simplex(prob, NULL);
     int res = glp_intopt(prob, &param);
