@@ -10,9 +10,12 @@
 
 typedef struct {
 
-    double* valeurs;
+    double** connexions; // les services connectés aux clients (dans cet ordre)
+    int* services; // les services qui sont ouverts
     int nbVarFixees;
+    double* capaRestantes;
     Probleme* pb;
+    double z;
 
 } Solution;
 
