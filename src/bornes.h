@@ -15,4 +15,10 @@
  */
 void construction(Solution* sol);
 
+/**
+ * \brief relaxation continue du problème
+ * \param sol la solution contenant le résultat de la relaxation
+ */
+void relaxationContinue(Solution* sol);
+
 #endif
