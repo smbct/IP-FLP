@@ -31,7 +31,7 @@ void construction(Solution* sol) {
     for(int i = 0; i < sol->pb->m; i++) {
         deltas[i] = malloc((long unsigned int)sol->pb->n*sizeof(double));
         for(int j = 0; j < sol->pb->n; j++) {
-            deltas[i][j] = sol->pb->liaisons[i][j] - cmin[i];
+            deltas[i][j] = sol->pb->liaisons[i][j] - cmin[j];
         }
     }
 
@@ -85,7 +85,9 @@ void construction(Solution* sol) {
                     indClient ++;
                 }
 
+
                 utilite /= (double)nbClientAjout;
+                printf("utilite : %f\n", utilite);
 
                 if(i == 0 || utilite < utiliteMin) {
                     utiliteMin = utilite;
@@ -93,6 +95,7 @@ void construction(Solution* sol) {
                 }
             }
         }
+        printf("meilleur phi : %f\n\n\n", utiliteMin);
 
         // retrait du meilleur service trouvé selon l'utilité et connexions des clients
         nbServiceOuvert ++;
@@ -116,6 +119,7 @@ void construction(Solution* sol) {
     }
 
     printf("nbClientAffecte : %d\n", nbClientAffecte);
+    printf("nbServiceOuvert : %d\n", nbServiceOuvert);
 
     free(cmin);
     for(int i = 0; i < sol->pb->m;i++) {
