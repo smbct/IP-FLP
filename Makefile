@@ -8,7 +8,7 @@ rapport:
 	pdflatex Rapport/rapport
 
 main: src/main.c $(OBJECTS_FILES)
-	$(CC) $(CFLAGS) src/main.c $(OBJECTS_FILES) -o main
+	$(CC) $(CFLAGS) src/main.c $(OBJECTS_FILES) -lglpk -o main
 
 solverGlpk: src/solverGlpk.c $(OBJECTS_FILES)
 	$(CC) $(CFLAGS) src/solverGlpk.c $(OBJECTS_FILES) -lglpk -o solverGlpk
