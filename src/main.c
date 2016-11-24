@@ -17,9 +17,9 @@ int main(int argc, char* argv[]) {
 
     Probleme pb;
 
-    chargerProbleme(&pb, "Instances/Areizaga/p1.dat");
+    // chargerProbleme(&pb, "Instances/Areizaga/p1.dat");
     // chargerProbleme(&pb, "Instances/Yang/60-300-1.dat");
-    // chargerProbleme(&pb, "Instances/Holmberg/p1.dat");
+    chargerProbleme(&pb, "Instances/Holmberg/p2.dat");
     // chargerProbleme(&pb, "Instances/jouet.dat");
 
     // afficherProbleme(&pb);
