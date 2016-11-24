@@ -14,7 +14,6 @@
 //------------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
 
-
     Probleme pb;
 
     // chargerProbleme(&pb, "Instances/Areizaga/p1.dat");
@@ -27,9 +26,11 @@ int main(int argc, char* argv[]) {
     Solution sol;
     creerSolution(&pb, &sol);
 
-    construction(&sol);
+    // construction(&sol);
+    relaxationContinue(&sol);
+    printf("relaxation continue : %lf\n", sol.z);
 
-    afficherSolution(&sol);
+    // afficherSolution(&sol);
 
     detruireSolution(&sol);
 
