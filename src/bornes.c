@@ -37,24 +37,44 @@ void construction(Solution* sol) {
         }
     }
 
+    printf("affichage des deltas :\n");
+    for(int i = 0; i < sol->pb->n; i++) {
+        printf("%d ; cmin = %lf : ", i, cmin[i]);
+        for(int j = 0; j < sol->pb->m; j++) {
+            printf("%lf, ", deltas[j][i]);
+        }
+        printf("\n");
+    }
+
     // tableau des clients affectés
     int* affectes = malloc((long unsigned int)sol->pb->n*sizeof(int));
     for(int i = 0; i < sol->pb->n;i++) {
         affectes[i] = 0;
     }
 
-    // tableau des clients par service triés en fonction des couts
+    // tableau des clients par service triés en fonction des deltas
     int** clientsTries = malloc((long unsigned int)sol->pb->m*sizeof(int*));
     for(int i = 0; i < sol->pb->m; i++) {
         clientsTries[i] = malloc((long unsigned int)sol->pb->n*sizeof(int));
         for(int j = 0; j < sol->pb->n; j++) {
             clientsTries[i][j] = j;
         }
-        // tri des clients
+        // tri des clients pour chaque service en fonction des cmin
         trierCroissant(sol->pb->n, clientsTries[i], deltas[i], sol->pb->demandes);
     }
 
-    // tri des clients pour chaque usine en fonction des cmin
+    // DEBUG affichage du tri
+    printf("résultat du tri :\n");
+    for(int i = 0; i < sol->pb->m; i++) {
+
+        for(int j = 0; j < sol->pb->n; j++) {
+
+            printf("( %lf ; %lf ), ", deltas[i][clientsTries[i][j]], sol->pb->demandes[clientsTries[i][j]]);
+
+        }
+        printf("\n");
+
+    }
 
     int nbClientAffecte = 0;
     int nbServiceOuvert = 0;
@@ -77,7 +97,7 @@ void construction(Solution* sol) {
                 int indClient = 0;
                 int nbClientAjout = 0;
 
-                // prise en compte des clients que le pourrait choisir
+                // prise en compte des clients que l'on peut affecter
                 while(indClient < sol->pb->n) {
                     if(!affectes[clientsTries[i][indClient]] && sol->pb->demandes[clientsTries[i][indClient]] <= capaRestante) {
                         nbClientAjout ++;
@@ -87,10 +107,9 @@ void construction(Solution* sol) {
                     indClient ++;
                 }
 
-
                 utilite /= (double)nbClientAjout;
 
-                if(serviceMin == -1 || utilite < utiliteMin) {
+                if(serviceMin == -1 || utilite <= utiliteMin) {
                     utiliteMin = utilite;
                     serviceMin = i;
                 }
