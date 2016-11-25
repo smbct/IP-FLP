@@ -18,19 +18,19 @@ int main(int argc, char* argv[]) {
 
     // chargerProbleme(&pb, "Instances/Areizaga/p1.dat");
     // chargerProbleme(&pb, "Instances/Yang/60-300-1.dat");
-    chargerProbleme(&pb, "Instances/Holmberg/p2.dat");
-    // chargerProbleme(&pb, "Instances/jouet.dat");
+    // chargerProbleme(&pb, "Instances/Holmberg/p2.dat");
+    chargerProbleme(&pb, "Instances/jouet.dat");
 
-    // afficherProbleme(&pb);
+    afficherProbleme(&pb);
 
     Solution sol;
     creerSolution(&pb, &sol);
 
-    // construction(&sol);
-    relaxationContinue(&sol);
-    printf("relaxation continue : %lf\n", sol.z);
+    construction(&sol);
+    // relaxationContinue(&sol);
+    // printf("relaxation continue : %lf\n", sol.z);
 
-    // afficherSolution(&sol);
+    afficherSolution(&sol);
 
     detruireSolution(&sol);
 

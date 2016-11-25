@@ -10,24 +10,27 @@
 #include <glpk.h>
 
 #include "probleme.h"
+#include "solution.h"
 
 /**
  * \brief résolution de l'instance à l'aide de glpk
  * \param pb l'instance du problème à résoudre
  */
-void resoudre(char* instance);
+void resoudre(char* instance, Solution* sol);
 
 //------------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
 
     // printf("Solver avec glpk\n");
 
+    Solution sol;
+
     if(argc > 1) {
 
         printf("%s", argv[1]);
         clock_t begin, end;
         begin = clock();
-        resoudre(argv[1]);
+        resoudre(argv[1], &sol);
         end = clock();
         double temps = (double)(end - begin) / CLOCKS_PER_SEC;
         temps *= 1000;
@@ -42,10 +45,12 @@ int main(int argc, char* argv[]) {
 }
 
 //------------------------------------------------------------------------------
-void resoudre(char* instance) {
+void resoudre(char* instance, Solution* sol) {
 
     Probleme pb;
     chargerProbleme(&pb, instance);
+
+    creerSolution(&pb, sol);
 
     printf(" $ %d * %d", pb.m, pb.n);
 
@@ -128,12 +133,30 @@ void resoudre(char* instance) {
 
     glp_simplex(prob, NULL);
     int res = glp_intopt(prob, &param);
+    sol->z = glp_mip_obj_val(prob);
 
-    printf(" $ %f", glp_mip_obj_val(prob));
+    // récupération des valeurs des variables
+
+    // lecture des connexions
+    for(int i = 0; i < pb.m; i++) {
+        for(int j = 0; j < pb.n; j++) {
+            sol->connexions[i][j] = (int)(glp_mip_col_val(prob, i*pb.n+j+1)+0.5);
+        }
+    }
+
+    // lecture des services ouverts
+    for(int i = 0; i < pb.m; i++) {
+        sol->services[i] = (int)(glp_mip_col_val(prob, pb.m*pb.n+1+i)+0.5);
+    }
+
+    printf(" $ %f", sol->z);
 
     if(res == GLP_ETMLIM) {
         printf("*");
     }
+
+    afficherSolution(sol);
+    detruireSolution(sol);
 
     glp_delete_prob(prob);
 
