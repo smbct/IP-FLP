@@ -244,3 +244,192 @@ void relaxationContinue(Solution* sol) {
     free(ar);
 
 }
+
+//------------------------------------------------------------------------------
+void relaxationCFLP(Solution* sol) {
+
+    Probleme* pb = sol->pb;
+
+    //désactivation du log de glpk
+    glp_term_out(0);
+
+    glp_prob* prob;
+    prob = glp_create_prob();
+    glp_set_prob_name(prob, "Relaxation CFLP");
+    glp_set_obj_dir(prob, GLP_MIN);
+
+    int nbVar = (pb->n+1)*pb->m;
+    int nbCont = pb->m + pb->n;
+
+    int nbCreux = pb->m*(pb->n+1) + pb->n*pb->m;
+    int* ia = malloc((long unsigned int)(nbCreux+1)*sizeof(int));
+    int* ja = malloc((long unsigned int)(nbCreux+1)*sizeof(int));
+    double* ar = malloc((long unsigned int)(nbCreux+1)*sizeof(double));
+
+    // déclaration des contraintes et des bornes sur celles-ci
+    glp_add_rows(prob, nbCont);
+    for(int i = 1; i <= pb->m; i++) {
+        glp_set_row_bnds(prob, i, GLP_UP, 0.0, 0.0);
+    }
+    for(int i = 1; i <= pb->n; i++) {
+        glp_set_row_bnds(prob, pb->m+i, GLP_LO, 1.0, 1.0);
+    }
+
+    // variables du problèmes, toutes binaires
+    glp_add_cols(prob, nbVar);
+    for(int i = 1; i <= nbVar; i++) {
+        glp_set_col_bnds(prob, i, GLP_DB, 0.0, 1.0);
+        if(i <= pb->n*pb->m) {
+            glp_set_col_kind(prob, i, GLP_CV);
+        } else {
+            glp_set_col_kind(prob, i, GLP_BV);
+        }
+    }
+
+    // coefficients dans la fonction objectif
+    for(int i = 0; i < pb->m; i++) {
+        for(int j = 0; j < pb->n; j++) {
+            glp_set_obj_coef(prob, i*pb->n+j+1, pb->liaisons[i][j]);
+        }
+        glp_set_obj_coef(prob, pb->m*pb->n+i+1, pb->couts[i]);
+    }
+
+    // initialisation de la matrice creuse des contraintes
+    int indice = 1;
+
+    // pour les m services, la capacité n'est pas dépassée
+    for(int i = 0; i < pb->m; i++) {
+        ia[indice] = i+1;
+        ja[indice] = pb->n*pb->m+i+1; // variable y_i
+        ar[indice] = -pb->capacites[i];
+        indice ++;
+        for(int j = 0; j < pb->n; j++) {
+            ia[indice] = i+1;
+            ja[indice] = i*pb->n+j+1; // variable x_{ij}
+            ar[indice] = pb->demandes[j];
+            indice ++;
+        }
+    }
+
+    // chaque client est connecté à un unique service
+    for(int i = 0; i < pb->n; i++) {
+        for(int j = 0; j < pb->m; j++) {
+            ia[indice] = pb->m+i+1;
+            ja[indice] = j*pb->n+i+1; // variable x_{ji}
+            ar[indice] = 1.0;
+            indice ++;
+        }
+    }
+
+    glp_load_matrix(prob, nbCreux, ia, ja, ar);
+
+    // glp_write_lp(prob,NULL,"relax.lp");
+
+    glp_simplex(prob, NULL);
+    glp_intopt(prob, NULL);
+
+    sol->z = glp_mip_obj_val(prob);
+    // récupération de la solution ?
+
+    glp_delete_prob(prob);
+
+    free(ia);
+    free(ja);
+    free(ar);
+
+}
+
+//------------------------------------------------------------------------------
+void relaxationUFLP(Solution* sol) {
+
+    Probleme* pb = sol->pb;
+
+    //désactivation du log de glpk
+    glp_term_out(0);
+
+    glp_prob* prob;
+    prob = glp_create_prob();
+    glp_set_prob_name(prob, "Relaxation UFLP");
+    glp_set_obj_dir(prob, GLP_MIN);
+
+    int nbVar = (pb->n+1)*pb->m;
+    int nbCont = pb->m*pb->n + pb->n;
+
+    int nbCreux = pb->m*pb->n*2 + pb->n*pb->m;
+    int* ia = malloc((long unsigned int)(nbCreux+1)*sizeof(int));
+    int* ja = malloc((long unsigned int)(nbCreux+1)*sizeof(int));
+    double* ar = malloc((long unsigned int)(nbCreux+1)*sizeof(double));
+
+    // déclaration des contraintes et des bornes sur celles-ci
+    glp_add_rows(prob, nbCont);
+    for(int i = 1; i <= pb->m*pb->n; i++) {
+        glp_set_row_bnds(prob, i, GLP_UP, 0.0, 0.0);
+    }
+    for(int i = 1; i <= pb->n; i++) {
+        glp_set_row_bnds(prob, pb->m*pb->n+i, GLP_LO, 1.0, 1.0);
+    }
+
+    // variables du problèmes, toutes binaires
+    glp_add_cols(prob, nbVar);
+    for(int i = 1; i <= nbVar; i++) {
+        glp_set_col_bnds(prob, i, GLP_DB, 0.0, 1.0);
+        if(i <= pb->n*pb->m) {
+            glp_set_col_kind(prob, i, GLP_CV);
+        } else {
+            glp_set_col_kind(prob, i, GLP_BV);
+        }
+    }
+
+    // coefficients dans la fonction objectif
+    for(int i = 0; i < pb->m; i++) {
+        for(int j = 0; j < pb->n; j++) {
+            glp_set_obj_coef(prob, i*pb->n+j+1, pb->liaisons[i][j]);
+        }
+        glp_set_obj_coef(prob, pb->m*pb->n+i+1, pb->couts[i]);
+    }
+
+    // initialisation de la matrice creuse des contraintes
+    int indice = 1;
+
+    // x_{ij} = 1 => y_i = 1
+    for(int i = 0; i < pb->m; i++) {
+        for(int j = 0; j < pb->n; j++) {
+            ia[indice] = i*pb->n+j+1;
+            ja[indice] = i*pb->n+j+1; // variable x_{ij}
+            ar[indice] = 1.0;
+            indice ++;
+
+            ia[indice] = i*pb->n+j+1;
+            ja[indice] = pb->n*pb->m+i+1; // variable y_i
+            ar[indice] = -1.0;
+            indice ++;
+        }
+    }
+
+    // chaque client est connecté à un unique service
+    for(int i = 0; i < pb->n; i++) {
+        for(int j = 0; j < pb->m; j++) {
+            ia[indice] = pb->m*pb->n+i+1;
+            ja[indice] = j*pb->n+i+1; // variable x_{ji}
+            ar[indice] = 1.0;
+            indice ++;
+        }
+    }
+
+    glp_load_matrix(prob, nbCreux, ia, ja, ar);
+
+    // glp_write_lp(prob,NULL,"relaxUFLP.lp");
+
+    glp_simplex(prob, NULL);
+    glp_intopt(prob, NULL);
+
+    sol->z = glp_mip_obj_val(prob);
+    // récupération de la solution ?
+
+    glp_delete_prob(prob);
+
+    free(ia);
+    free(ja);
+    free(ar);
+
+}

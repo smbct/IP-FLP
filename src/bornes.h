@@ -21,4 +21,16 @@ void construction(Solution* sol);
  */
 void relaxationContinue(Solution* sol);
 
+/**
+ * \brief relaxation du problème en résolvant le CFLP
+ * \param sol la solution contenant le résultat de la relaxation
+ */
+void relaxationCFLP(Solution* sol);
+
+/**
+ * \brief relaxation du problème en résolvant le UFLP
+ * \param sol la solution contenant le résultat de la relaxation
+ */
+void relaxationUFLP(Solution* sol);
+
 #endif
