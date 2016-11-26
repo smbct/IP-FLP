@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
 
     // chargerProbleme(&pb, "Instances/Areizaga/p1.dat");
     // chargerProbleme(&pb, "Instances/Yang/60-300-1.dat");
-    chargerProbleme(&pb, "Instances/Holmberg/p22.dat");
+    // chargerProbleme(&pb, "Instances/Holmberg/p2.dat");
     // chargerProbleme(&pb, "Instances/jouet.dat");
 
     // afficherProbleme(&pb);
@@ -26,8 +26,11 @@ int main(int argc, char* argv[]) {
     Solution sol;
     creerSolution(&pb, &sol);
 
-    construction(&sol);
+    // construction(&sol);
     // relaxationContinue(&sol);
+    // relaxationCFLP(&sol);
+    relaxationUFLP(&sol);
+
     // printf("relaxation continue : %lf\n", sol.z);
 
     // afficherSolution(&sol);
