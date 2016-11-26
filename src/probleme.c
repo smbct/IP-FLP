@@ -81,7 +81,7 @@ void afficherProbleme(Probleme* pb) {
 }
 
 //------------------------------------------------------------------------------
-void detruireProblem(Probleme* pb) {
+void detruireProbleme(Probleme* pb) {
 
     free(pb->couts);
     free(pb->capacites);

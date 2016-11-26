@@ -1,6 +1,8 @@
 \section{Introduction}
 
 Dans cette partie du TP, une borne primale et une borne duale sont introduites.
+Elles ont pour but de permettre la résolution du problème de SSCFLP à l'aide d'un algorithme de type branch \& bound.
+Plusieurs bornes duales sont confrontées.
 
 \section{Borne primale}
 
@@ -11,6 +13,44 @@ Cette heuristique de construction consiste, à partir d'une solution non admissi
 Ensuite, pour une solution partielle donné, une utilité est calculée pour chaque service.
 Cette utilité dépend du coût d'ouverture du service ainsi que du coût de connexions des clients
 
-\section{Borne duale}
+\section{Bornes duales}
 
-\section{Résultats}
+Plusieurs bornes duales ont été testées. Elles ont toutes été implémentée à l'aide du solver glpk.
+La première borne est la relaxation continue. La contrainte d'intégrité a donc seulement été relachée.
+La deuxième borne est la résolution du problème UFLP, tel que présenté dans le jalon 1.
+La dernière borne est la résolution du problème CFLP, encore une fois comme présenté dans le jalon 1.
+
+\section{Résultats obtenus}
+
+\section{Annexes}
+
+\subsection{Valeurs des bornes}
+
+Le tableau ci-dessous présente les valeurs des différentes bornes pour chaque instance.
+Les colonnes 2, 3 et 4 correspondent repectivement aux relaxations continues, résolution du UFLP et résolution du CFLP.
+La colonne 4 continent les meilleures solutions obtenues dans les jalons 1 et 2.
+Lorsque la résolution a été arrêtée avant la fin, la valeur est suivie de *.
+Enfin la colonne 5 contient la valeur obtenue avec l'heuristiques de constructions proposée. \newline
+
+Pour certaines instances, la résolution de CFLP étant trop longue, la valeur n'a pas été reportée.
+Il aurait été possible de rapporté la meilleure valeur obtenue, mais étant donné que c'est une borne duale qui est requise, le résultat n'aurait pas été exacte.
+On aurait pu en effet avoir une valeur supérieure à la solution optimale du SSCFLP.
+
+\begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+    instance & continue & UFLP & CFLP & meilleure solution & heuristique \\
+    \hline
+    Holmberg p14.dat & 5371.061260 & 7092 & 7125.640674 & 7137 & 8151 \\
+    Holmberg p15.dat & 6827.102099 & 8735 & 8805.846154 & 8808 & 9751 \\
+    Holmberg p20.dat & 8176.250000 & 10168 & 10363.248332 & 10486 & 11324 \\
+    Holmberg p22.dat & 4893 & 7092 & 7092 & 7092 & 9697 \\
+    Holmberg p23.dat & 6035 & 8735 & 8736.075472 & 8746 & 10897 \\
+    Beasley cap64.dat & 928920.970833 & 1034976.975 & 1045650.25 & 1053197.4375 & 1291646.925 \\
+    Beasley cap73.dat & 854529.834304 & 1010641.45 & 1010641.45 & 1010641.45 & 1248142.9 \\
+    Beasley cap94.dat & 746143.366667 & 928941.75 & - & 950608.425 & 1247180.95 \\
+    Beasley cap103.dat & 669355.662254 & 893782.1125 & - & 895592.7625* & 1248142.9 \\
+    Beasley cap122.dat & 672168.95 & 851495.325 & - & 871199.7375* & 1180037.1875 \\
+    \hline
+\end{tabular}
+
+\subsection{Temps de calculs}
