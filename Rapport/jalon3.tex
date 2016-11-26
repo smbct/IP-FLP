@@ -6,12 +6,13 @@ Plusieurs bornes duales sont confrontées.
 
 \section{Borne primale}
 
-L'heuristique de construction choisie pour la brone primale est celle donnée dans les papiers de Delamaire.
-Dans le papier, elle est utilisée pour l'implémentation d'une métaheuristique de type GRASP. \newline
+L'heuristique de construction choisie pour la borne primale est celle donnée dans les papiers de Delamaire.
+Dans ces papiers, elle est utilisée pour l'implémentation d'une métaheuristique de type GRASP. \newline
 
-Cette heuristique de construction consiste, à partir d'une solution non admissible ou aucun client est affecté.
+Cette heuristique de construction consiste à démarer d'une solution non admissible ou aucun client n'est affecté.
 Ensuite, pour une solution partielle donné, une utilité est calculée pour chaque service.
-Cette utilité dépend du coût d'ouverture du service ainsi que du coût de connexions des clients
+Cette utilité dépend du coût d'ouverture du service ainsi que du coût de connexions des clients.
+Enfin, le service possédant la plus petite utilité est sélectionné et tous les clients pouvant être connectés le sont, selon un certain ordre.
 
 \section{Bornes duales}
 
@@ -20,7 +21,23 @@ La première borne est la relaxation continue. La contrainte d'intégrité a don
 La deuxième borne est la résolution du problème UFLP, tel que présenté dans le jalon 1.
 La dernière borne est la résolution du problème CFLP, encore une fois comme présenté dans le jalon 1.
 
-\section{Résultats obtenus}
+\section{Résultats obtenus et conclusions}
+
+Les données obtenues ainsi que les temps ont été reportés en annexe.
+On remarque tout de suite que la relaxtion UFLP est meilleure que la relaxation continue et que la relaxation CFLP est meilleure que le relaxation UFLP.
+Ce dernier point est normal car UFLP est une relaxation du problème CFLP.
+On peut ensuite noter que Les bornes UFLP et CFLP sont assez proches, et surtout assez proches de la solution optimale ou de la meilleure solution connue.
+La relaxation continue semble donc moins intéressante pour ce problème. \newline
+
+En comparant les temps de résolution des problèmes CFLP et UFLP, on remarque que le problème CFLP prend beaucoup plus de temps.
+En effet, le temps minimum est de plus de 300 millisecondes et, pour les instances les plus difficiles, la résolution ne s'est pas terminée au bout d'une minute.
+La borne basée sur le problème CFLP n'est donc pas utilisable de cette manière dans un algorithme de type branch \& bound.
+Il pourrait être intéressant d'étudier la litérature afin d'implémenter un solver spécifique et donc efficace pour le problème CFLP, si un tel solver existe. \newline
+
+Les temps de résolution pour le problème UFLP parraissent quand à eux résonables, y compris pour l'utilisation dans un branch \& bound.
+Etant donné que la borne fournie est nettement plus intéressant que celle de la relaxation continue, il pourrait être intéressant d'utiliser cette borne dans le branch \& bound. \newline
+
+Enfin, l'algorithme de construction donne quand à lui des bornes assez éloignées. L'écart entre cette borne et la meilleure solution est plus important que celui entre la borne de l'UFLP et la meilleure solution. Il pourrait donc être intéressant d'implémenter une métaheuristique fournissant une meilleure solution, d'autant plus que la borne primale n'est calculée qu'une seule fois en début de résolution.
 
 \section{Annexes}
 
@@ -28,29 +45,51 @@ La dernière borne est la résolution du problème CFLP, encore une fois comme p
 
 Le tableau ci-dessous présente les valeurs des différentes bornes pour chaque instance.
 Les colonnes 2, 3 et 4 correspondent repectivement aux relaxations continues, résolution du UFLP et résolution du CFLP.
-La colonne 4 continent les meilleures solutions obtenues dans les jalons 1 et 2.
+La colonne 4 contient les meilleures solutions obtenues dans les jalons 1 et 2.
 Lorsque la résolution a été arrêtée avant la fin, la valeur est suivie de *.
-Enfin la colonne 5 contient la valeur obtenue avec l'heuristiques de constructions proposée. \newline
+Enfin la colonne 5 contient la valeur obtenue avec l'heuristiques de construction proposée. \newline
 
 Pour certaines instances, la résolution de CFLP étant trop longue, la valeur n'a pas été reportée.
-Il aurait été possible de rapporté la meilleure valeur obtenue, mais étant donné que c'est une borne duale qui est requise, le résultat n'aurait pas été exacte.
-On aurait pu en effet avoir une valeur supérieure à la solution optimale du SSCFLP.
+Il aurait été possible de rapporter la meilleure valeur obtenue, mais étant donné que c'est une borne duale qui est requise, le résultat n'aurait pas été exacte.
+On aurait pu en effet avoir une valeur supérieure à la solution optimale du SSCFLP. \newline
 
 \begin{tabular}{|c|c|c|c|c|c|}
     \hline
     instance & continue & UFLP & CFLP & meilleure solution & heuristique \\
     \hline
-    Holmberg p14.dat & 5371.061260 & 7092 & 7125.640674 & 7137 & 8151 \\
-    Holmberg p15.dat & 6827.102099 & 8735 & 8805.846154 & 8808 & 9751 \\
-    Holmberg p20.dat & 8176.250000 & 10168 & 10363.248332 & 10486 & 11324 \\
-    Holmberg p22.dat & 4893 & 7092 & 7092 & 7092 & 9697 \\
-    Holmberg p23.dat & 6035 & 8735 & 8736.075472 & 8746 & 10897 \\
-    Beasley cap64.dat & 928920.970833 & 1034976.975 & 1045650.25 & 1053197.4375 & 1291646.925 \\
-    Beasley cap73.dat & 854529.834304 & 1010641.45 & 1010641.45 & 1010641.45 & 1248142.9 \\
-    Beasley cap94.dat & 746143.366667 & 928941.75 & - & 950608.425 & 1247180.95 \\
-    Beasley cap103.dat & 669355.662254 & 893782.1125 & - & 895592.7625* & 1248142.9 \\
-    Beasley cap122.dat & 672168.95 & 851495.325 & - & 871199.7375* & 1180037.1875 \\
+    Holmberg p14 & 5371.061260 & 7092 & 7125.640674 & 7137 & 8151 \\
+    Holmberg p15 & 6827.102099 & 8735 & 8805.846154 & 8808 & 9751 \\
+    Holmberg p20 & 8176.25 & 10168 & 10363.248332 & 10486 & 11324 \\
+    Holmberg p22 & 4893 & 7092 & 7092 & 7092 & 9697 \\
+    Holmberg p23 & 6035 & 8735 & 8736.075472 & 8746 & 10897 \\
+    Beasley cap64 & 928920.970833 & 1034976.975 & 1045650.25 & 1053197.4375 & 1291646.925 \\
+    Beasley cap73 & 854529.834304 & 1010641.45 & 1010641.45 & 1010641.45 & 1248142.9 \\
+    Beasley cap94 & 746143.366667 & 928941.75 & - & 950608.425 & 1247180.95 \\
+    Beasley cap103 & 669355.662254 & 893782.1125 & - & 895592.7625* & 1248142.9 \\
+    Beasley cap122 & 672168.95 & 851495.325 & - & 871199.7375* & 1180037.1875 \\
     \hline
 \end{tabular}
 
+\newpage
+
 \subsection{Temps de calculs}
+
+Le tableau ci dessous reprend les temps de calculs en millisecondes pour chaque instance pour les bornes UFLP et CFLP.
+Lorsque la résolution ne s'est pas terminée après une minute, le temps est suivi de *. \newline
+
+\begin{tabular}{|c|c|c|}
+    \hline
+    instance & temps UFLP (ms) & temps CFLP (ms) \\
+    \hline
+    Beasley cap103 & 51.385 & 59930.82* \\
+    Beasley cap122 & 87.37 & 59887.389* \\
+    Beasley cap64 & 20.781 & 325.468 \\
+    Beasley cap73 & 17.909 & 2210.017 \\
+    Beasley cap94 & 42.294 & 54400.565 \\
+    Holmberg p14 & 24.558 & 6054.298 \\
+    Holmberg p15 & 38.765000 & 2212.145 \\
+    Holmberg p20 & 44.29 & 1902.253 \\
+    Holmberg p22 & 26.428 & 9757.105 \\
+    Holmberg p23 &  37.041 & 5676.145 \\
+    \hline
+\end{tabular}

@@ -258,6 +258,11 @@ void relaxationCFLP(Solution* sol) {
     glp_set_prob_name(prob, "Relaxation CFLP");
     glp_set_obj_dir(prob, GLP_MIN);
 
+    // timer glpk
+    glp_iocp param;
+    glp_init_iocp(&param);
+    param.tm_lim = 1000*60; // valeur en ms
+
     int nbVar = (pb->n+1)*pb->m;
     int nbCont = pb->m + pb->n;
 
@@ -326,7 +331,11 @@ void relaxationCFLP(Solution* sol) {
     // glp_write_lp(prob,NULL,"relax.lp");
 
     glp_simplex(prob, NULL);
-    glp_intopt(prob, NULL);
+    int res = glp_intopt(prob, &param);
+
+    if(res == GLP_ETMLIM) {
+        printf("*");
+    }
 
     sol->z = glp_mip_obj_val(prob);
     // récupération de la solution ?

@@ -1,5 +1,5 @@
 for instance in Bench/*.dat
 do
     echo $instance
-    ./../main $instance >> resultatsBornes.txt
+    ./../main $instance >> resultatsTempsBornes.txt
 done
