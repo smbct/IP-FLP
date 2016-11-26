@@ -43,7 +43,8 @@ void fusion(int deb, int milieu, int fin, int* ind, double* val, double* val2) {
     for(int i = 0; i < fin-deb+1; i++) { // parcours de toutes les valeurs à trier
 
         // cas où la c'est l'élément du tableau de droite qui est sélectionné
-        if(indDte <= fin && (indGch > milieu || (val[ind[indDte]] < val[ind[indGch]] || (val[ind[indDte]] == val[ind[indGch]] && val2[ind[indDte]] > val2[ind[indGch]])))) {
+        if(indDte <= fin && (indGch > milieu || (val[ind[indDte]] < val[ind[indGch]] || (val[ind[indDte]] == val[ind[indGch]] && val2[ind[indDte]] > val2[ind[indGch]]))))
+        {
             triees[i] = ind[indDte];
             indDte ++;
         } else { // cas où c'est l'élément de gauche qui est sélectionné
