@@ -37,14 +37,15 @@ void construction(Solution* sol) {
         }
     }
 
-    printf("affichage des deltas :\n");
+    // DEBUG affichage des deltas
+    /*printf("affichage des deltas :\n");
     for(int i = 0; i < sol->pb->n; i++) {
         printf("%d ; cmin = %lf : ", i, cmin[i]);
         for(int j = 0; j < sol->pb->m; j++) {
-            printf("%lf, ", deltas[j][i]);
+            printf("%lf, ", sol->pb->liaisons[j][i] - cmin[i]);
         }
-        printf("\n");
-    }
+        printf("\n\n");
+    }*/
 
     // tableau des clients affectés
     int* affectes = malloc((long unsigned int)sol->pb->n*sizeof(int));
@@ -64,7 +65,7 @@ void construction(Solution* sol) {
     }
 
     // DEBUG affichage du tri
-    printf("résultat du tri :\n");
+    /*printf("résultat du tri :\n");
     for(int i = 0; i < sol->pb->m; i++) {
 
         for(int j = 0; j < sol->pb->n; j++) {
@@ -74,7 +75,7 @@ void construction(Solution* sol) {
         }
         printf("\n");
 
-    }
+    }*/
 
     int nbClientAffecte = 0;
     int nbServiceOuvert = 0;
@@ -86,6 +87,7 @@ void construction(Solution* sol) {
         double utiliteMin = 0;
         int serviceMin = -1;
 
+        // calcul de l'utilité min sur tous les services non affectés
         for(int i = 0; i < sol->pb->m; i++) {
 
             if(!sol->services[i]) {
@@ -137,8 +139,12 @@ void construction(Solution* sol) {
         }
     }
 
-    printf("nbClientAffecte : %d\n", nbClientAffecte);
-    printf("nbServiceOuvert : %d\n", nbServiceOuvert);
+    /*printf("nbClientAffecte : %d\n", nbClientAffecte);
+    printf("nbServiceOuvert : %d\n", nbServiceOuvert);*/
+
+    if(nbClientAffecte < sol->pb->n) {
+        printf("Problème impossible\n");
+    }
 
     free(cmin);
     for(int i = 0; i < sol->pb->m;i++) {

@@ -54,6 +54,43 @@ void afficherSolution(Solution* sol) {
 
 }
 
+
+//------------------------------------------------------------------------------
+int solutionAdmissible(Solution* sol) {
+
+    int res = 1;
+    // vérification des capacités et demandes
+    for(int i = 0; i < sol->pb->m; i++) {
+        int somme = 0;
+        for(int j = 0; j < sol->pb->n; j++) {
+            if(sol->connexions[i][j]) {
+                somme += sol->pb->demandes[j];
+            }
+        }
+        if(somme > sol->pb->capacites[i]) {
+            res = 0;
+        }
+    }
+    // vérif que tous les clients sont connectés une et une seule fois
+    for(int j = 0; j < sol->pb->n; j++) {
+        int nbFois = 0;
+        for(int i = 0; i < sol->pb->m;i++) {
+            if(sol->connexions[i][j]) {
+                nbFois ++;
+                if(sol->services[i] == 0) {
+                    res = 0;
+                }
+            }
+        }
+        if(nbFois != 1) {
+            res = 0;
+        }
+    }
+
+    return res;
+
+}
+
 //------------------------------------------------------------------------------
 void detruireSolution(Solution* sol) {
 

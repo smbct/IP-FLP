@@ -32,6 +32,13 @@ void creerSolution(Probleme* pb, Solution* sol);
 void afficherSolution(Solution* sol);
 
 /**
+ * \brief vérification de l'admissibilité de la solution
+ * \param sol la solution à vérifier
+ * \return vrai ssi la solution est admissible
+ */
+int solutionAdmissible(Solution* sol);
+
+/**
  * \brief désallocation mémoire d'une solution
  * \param sol la solution à désallouer
  */

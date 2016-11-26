@@ -18,10 +18,10 @@ int main(int argc, char* argv[]) {
 
     // chargerProbleme(&pb, "Instances/Areizaga/p1.dat");
     // chargerProbleme(&pb, "Instances/Yang/60-300-1.dat");
-    // chargerProbleme(&pb, "Instances/Holmberg/p2.dat");
-    chargerProbleme(&pb, "Instances/jouet.dat");
+    chargerProbleme(&pb, "Instances/Holmberg/p22.dat");
+    // chargerProbleme(&pb, "Instances/jouet.dat");
 
-    afficherProbleme(&pb);
+    // afficherProbleme(&pb);
 
     Solution sol;
     creerSolution(&pb, &sol);
@@ -30,7 +30,8 @@ int main(int argc, char* argv[]) {
     // relaxationContinue(&sol);
     // printf("relaxation continue : %lf\n", sol.z);
 
-    afficherSolution(&sol);
+    // afficherSolution(&sol);
+    printf("z = %lf\n", sol.z);
 
     detruireSolution(&sol);
 
