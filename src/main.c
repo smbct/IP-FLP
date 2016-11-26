@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "probleme.h"
 #include "solution.h"
@@ -34,32 +35,40 @@ void calculerBorne(Probleme* pb, int option) {
 //------------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
 
+    clock_t begin, end;
+    double temps;
+
     if(argc > 1) {
         Probleme pb;
 
         chargerProbleme(&pb, argv[1]);
 
-        /*printf("%s & ", argv[1]);
-        for(int i = 0; i < 4; i++) {
-            calculerBorne(&pb, i);
-            if(i < 3) {
-                printf(" & ");
-            } else {
-                printf("\\\\ \n");
-            }
-        }*/
-
         Solution sol;
+
         creerSolution(&pb, &sol);
-        relaxationContinue(&sol);
-        // construction(&sol);
-        printf("%lf\n", sol.z);
+
+        begin = clock();
+        relaxationUFLP(&sol);
+        end = clock();
+        temps = (double)(end - begin) / CLOCKS_PER_SEC;
+        temps *= 1000;
+        printf("%lf & ", temps);
+
+        detruireSolution(&sol);
+
+        creerSolution(&pb, &sol);
+
+        begin = clock();
+        relaxationCFLP(&sol);
+        end = clock();
+        temps = (double)(end - begin) / CLOCKS_PER_SEC;
+        temps *= 1000;
+        printf("%lf \\\\ \n", temps);
+
+        detruireSolution(&sol);
+
         detruireProbleme(&pb);
     }
-
-
-
-
 
 
     return 0;
