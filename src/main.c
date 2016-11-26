@@ -10,35 +10,57 @@
 #include "solution.h"
 #include "bornes.h"
 
+//------------------------------------------------------------------------------
+void calculerBorne(Probleme* pb, int option) {
+
+    Solution sol;
+    creerSolution(pb, &sol);
+
+    if(option == 0) {
+        relaxationContinue(&sol);
+    } else if(option == 1) {
+        relaxationUFLP(&sol);
+    } else if(option == 2) {
+        relaxationCFLP(&sol);
+    } else {
+        construction(&sol);
+    }
+
+    printf("%lf", sol.z);
+
+    detruireSolution(&sol);
+}
 
 //------------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
 
-    Probleme pb;
+    if(argc > 1) {
+        Probleme pb;
 
-    // chargerProbleme(&pb, "Instances/Areizaga/p1.dat");
-    // chargerProbleme(&pb, "Instances/Yang/60-300-1.dat");
-    // chargerProbleme(&pb, "Instances/Holmberg/p2.dat");
-    // chargerProbleme(&pb, "Instances/jouet.dat");
+        chargerProbleme(&pb, argv[1]);
 
-    // afficherProbleme(&pb);
+        /*printf("%s & ", argv[1]);
+        for(int i = 0; i < 4; i++) {
+            calculerBorne(&pb, i);
+            if(i < 3) {
+                printf(" & ");
+            } else {
+                printf("\\\\ \n");
+            }
+        }*/
 
-    Solution sol;
-    creerSolution(&pb, &sol);
+        Solution sol;
+        creerSolution(&pb, &sol);
+        relaxationContinue(&sol);
+        // construction(&sol);
+        printf("%lf\n", sol.z);
+        detruireProbleme(&pb);
+    }
 
-    // construction(&sol);
-    // relaxationContinue(&sol);
-    // relaxationCFLP(&sol);
-    relaxationUFLP(&sol);
 
-    // printf("relaxation continue : %lf\n", sol.z);
 
-    // afficherSolution(&sol);
-    printf("z = %lf\n", sol.z);
 
-    detruireSolution(&sol);
 
-    detruireProblem(&pb);
 
     return 0;
 }

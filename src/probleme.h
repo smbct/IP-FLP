@@ -37,6 +37,6 @@ void afficherProbleme(Probleme* pb);
  * \brief désallocation d'un problème
  * \param pb le probleme à désallouer
  */
-void detruireProblem(Probleme* pb);
+void detruireProbleme(Probleme* pb);
 
 #endif // PROBLEME_H
