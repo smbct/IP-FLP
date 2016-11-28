@@ -47,23 +47,8 @@ int main(int argc, char* argv[]) {
 
         creerSolution(&pb, &sol);
 
-        begin = clock();
         relaxationUFLP(&sol);
-        end = clock();
-        temps = (double)(end - begin) / CLOCKS_PER_SEC;
-        temps *= 1000;
-        printf("%lf & ", temps);
-
-        detruireSolution(&sol);
-
-        creerSolution(&pb, &sol);
-
-        begin = clock();
-        relaxationCFLP(&sol);
-        end = clock();
-        temps = (double)(end - begin) / CLOCKS_PER_SEC;
-        temps *= 1000;
-        printf("%lf \\\\ \n", temps);
+        printf("z = %lf\n", sol.z);
 
         detruireSolution(&sol);
 

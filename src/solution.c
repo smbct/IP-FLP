@@ -33,6 +33,27 @@ void creerSolution(Probleme* pb, Solution* sol) {
 
     sol->z = 0.;
 
+    sol->nbServicesOuverts = 0;
+    sol->nbClientsConnectes = 0;
+    sol->clientsConnectes = malloc((long unsigned int)pb->n*sizeof(int));
+    for(int i = 0; i < pb->n; i++) {
+        sol->clientsConnectes[i] = 0;
+    }
+
+    sol->varConnexionsAffectees = malloc((long unsigned int)pb->m*sizeof(int));
+    for(int i = 0; i < pb->m; i++) {
+        sol->varConnexionsAffectees[i] = malloc((long unsigned int)pb->m*sizeof(int));
+        for(int j = 0; j < pb->n; j++) {
+            sol->varConnexionsAffectees[i][j] = 0;
+        }
+    }
+
+    sol->varServicesAffectees = malloc((long unsigned int)pb->m*sizeof(int));
+    for(int i = 0; i < pb->m; i++) {
+        sol->varServicesAffectees[i] = 0;
+    }
+
+
 }
 
 //------------------------------------------------------------------------------
@@ -61,7 +82,7 @@ int solutionAdmissible(Solution* sol) {
     int res = 1;
     // vérification des capacités et demandes
     for(int i = 0; i < sol->pb->m; i++) {
-        int somme = 0;
+        double somme = 0;
         for(int j = 0; j < sol->pb->n; j++) {
             if(sol->connexions[i][j]) {
                 somme += sol->pb->demandes[j];
@@ -101,4 +122,11 @@ void detruireSolution(Solution* sol) {
     }
     free(sol->connexions);
     free(sol->services);
+    free(sol->clientsConnectes);
+
+    for(int i = 0; i < sol->pb->m; i++) {
+        free(sol->varConnexionsAffectees[i]);
+    }
+    free(sol->varConnexionsAffectees);
+    free(sol->varServicesAffectees);
 }

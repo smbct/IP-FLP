@@ -13,9 +13,16 @@ typedef struct {
     double** connexions; // les services connectés aux clients (dans cet ordre)
     int* services; // les services qui sont ouverts
     int nbVarFixees;
-    double* capaRestantes;
-    Probleme* pb;
-    double z;
+    int nbServicesOuverts; // nomvbre de service ouvert
+    int nbClientsConnectes; // nombre de client connecté
+
+    int* clientsConnectes; // tableau de booléens, 1 ssi le client i est connecté
+    int** varConnexionsAffectees;  // tableau de booléen indiquant les variables de connexions fixées durant la résolution
+    int* varServicesAffectees; // tableau de booléen indiquant les variables de services fixées durant la résolution
+
+    double* capaRestantes; // capacités restantes des services
+    Probleme* pb; // problème à résoudre
+    double z; // valeur de la fonction objective
 
 } Solution;
 
