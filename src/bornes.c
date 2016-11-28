@@ -1,5 +1,5 @@
 /**
- * \file brones.c
+ * \file bornes.c
  * \brief implémentations de fonctions de calcul de bornes pour le SSCFLP
  */
 
@@ -142,9 +142,9 @@ void construction(Solution* sol) {
     /*printf("nbClientAffecte : %d\n", nbClientAffecte);
     printf("nbServiceOuvert : %d\n", nbServiceOuvert);*/
 
-    if(nbClientAffecte < sol->pb->n) {
+    /*if(nbClientAffecte < sol->pb->n) {
         printf("Problème impossible\n");
-    }
+    }*/
 
     free(cmin);
     for(int i = 0; i < sol->pb->m;i++) {
@@ -190,9 +190,34 @@ void relaxationContinue(Solution* sol) {
 
     // variables du problèmes, toutes binaires
     glp_add_cols(prob, nbVar);
-    for(int i = 1; i <= nbVar; i++) {
-        glp_set_col_bnds(prob, i, GLP_DB, 0.0, 1.0);
-        glp_set_col_kind(prob, i, GLP_CV);
+    for(int i = 0; i < pb->m; i++) {
+        for(int j = 0; j < pb->n; j++) {
+            glp_set_col_kind(prob, i*pb->n+j+1, GLP_CV);
+            if(sol->varConnexionsAffectees[i][j]) {
+                if(sol->connexions[i][j]) {
+                    glp_set_col_bnds(prob, i, GLP_FX, 1.0, 1.0);
+                } else {
+                    glp_set_col_bnds(prob, i, GLP_FX, 0.0, 0.0);
+                }
+            } else {
+                // les variables qui ont été fixées le sont dans glpk
+                glp_set_col_bnds(prob, i, GLP_DB, 0.0, 1.0);
+            }
+        }
+    }
+
+    for(int i = 0; i < pb->m; i++) {
+        // les variables qui ont été fixées le sont dans glpk
+        if(sol->varServicesAffectees[i]) {
+            if(sol->services[i]) {
+                glp_set_col_bnds(prob, pb->n*pb->m+i+1, GLP_FX, 1.0, 1.0);
+            } else {
+                glp_set_col_bnds(prob, pb->n*pb->m+i+1, GLP_FX, 0.0, 0.0);
+            }
+        } else {
+            glp_set_col_bnds(prob, pb->n*pb->m+i+1, GLP_DB, 0.0, 1.0);
+        }
+        glp_set_col_kind(prob, pb->n*pb->m+i+1, GLP_CV);
     }
 
     // coefficients dans la fonction objectif
