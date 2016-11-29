@@ -12,8 +12,9 @@
  * \brief algorithme de branch & bound pour la résolution de SSCFLP
  * \param sol la solution contenant le problème à résoudre
  */
+void branchBoundRec(Solution* sol, Solution* duale, Solution* best);
+
+
 void branchBound(Solution* sol);
-
-
 
 #endif

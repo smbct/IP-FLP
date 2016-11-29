@@ -164,6 +164,6 @@ void resoudre(char* instance, Solution* sol) {
     free(ja);
     free(ar);
 
-    detruireProblem(&pb);
+    detruireProbleme(&pb);
 
 }

@@ -11,7 +11,6 @@
 void creerSolution(Probleme* pb, Solution* sol) {
 
     sol->pb = pb;
-    sol->nbVarFixees = 0;
 
     sol->connexions = malloc((long unsigned int)pb->m*sizeof(double));
     for(int i = 0; i < sol->pb->m; i++) {
@@ -40,9 +39,9 @@ void creerSolution(Probleme* pb, Solution* sol) {
         sol->clientsConnectes[i] = 0;
     }
 
-    sol->varConnexionsAffectees = malloc((long unsigned int)pb->m*sizeof(int));
+    sol->varConnexionsAffectees = malloc((long unsigned int)pb->m*sizeof(int*));
     for(int i = 0; i < pb->m; i++) {
-        sol->varConnexionsAffectees[i] = malloc((long unsigned int)pb->m*sizeof(int));
+        sol->varConnexionsAffectees[i] = malloc((long unsigned int)pb->n*sizeof(int));
         for(int j = 0; j < pb->n; j++) {
             sol->varConnexionsAffectees[i][j] = 0;
         }
@@ -52,6 +51,9 @@ void creerSolution(Probleme* pb, Solution* sol) {
     for(int i = 0; i < pb->m; i++) {
         sol->varServicesAffectees[i] = 0;
     }
+
+    sol->nbVarConnFixees = 0;
+    sol->nbVarServicesFixees = 0;
 
 
 }
@@ -109,6 +111,33 @@ int solutionAdmissible(Solution* sol) {
     }
 
     return res;
+
+}
+
+//------------------------------------------------------------------------------
+void copierSolution(Solution* sol, Solution* copie) {
+
+    copie->pb = sol->pb;
+    // valeurs des variables
+    for(int i = 0; i < sol->pb->m; i++) {
+        for(int j = 0; j < sol->pb->n; j++) {
+            copie->connexions[i][j] = sol->connexions[i][j];
+        }
+        copie->services[i] = sol->services[i];
+        copie->varServicesAffectees[i] = sol->varServicesAffectees[i];
+        copie->capaRestantes[i] = sol->capaRestantes[i];
+    }
+
+    for(int i = 0; i < sol->pb->n; i++) {
+        copie->varConnexionsAffectees[i] = sol->varConnexionsAffectees[i];
+        copie->clientsConnectes[i] = sol->clientsConnectes[i];
+    }
+
+    copie->nbVarConnFixees = sol->nbVarConnFixees;
+    copie->nbVarServicesFixees = sol->nbVarServicesFixees;
+    copie->nbServicesOuverts = sol->nbServicesOuverts;
+    copie->nbClientsConnectes = sol->nbClientsConnectes;
+    copie->z = sol->z;
 
 }
 
