@@ -10,33 +10,13 @@
 #include "probleme.h"
 #include "solution.h"
 #include "bornes.h"
-
-//------------------------------------------------------------------------------
-void calculerBorne(Probleme* pb, int option) {
-
-    Solution sol;
-    creerSolution(pb, &sol);
-
-    if(option == 0) {
-        relaxationContinue(&sol);
-    } else if(option == 1) {
-        relaxationUFLP(&sol);
-    } else if(option == 2) {
-        relaxationCFLP(&sol);
-    } else {
-        construction(&sol);
-    }
-
-    printf("%lf", sol.z);
-
-    detruireSolution(&sol);
-}
+#include "solver.h"
 
 //------------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
 
-    clock_t begin, end;
-    double temps;
+    /*clock_t begin, end;
+    double temps;*/
 
     if(argc > 1) {
         Probleme pb;
@@ -47,8 +27,8 @@ int main(int argc, char* argv[]) {
 
         creerSolution(&pb, &sol);
 
-        relaxationUFLP(&sol);
-        printf("z = %lf\n", sol.z);
+        printf("Lancement du branch & bound\n");
+        branchBound(&sol);
 
         detruireSolution(&sol);
 

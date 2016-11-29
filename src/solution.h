@@ -12,8 +12,11 @@ typedef struct {
 
     double** connexions; // les services connectés aux clients (dans cet ordre)
     int* services; // les services qui sont ouverts
-    int nbVarFixees;
-    int nbServicesOuverts; // nomvbre de service ouvert
+
+    int nbVarServicesFixees; // nombre de variable de service fixées
+    int nbVarConnFixees; // nombre de variables de clients affectées
+
+    int nbServicesOuverts; // nombre de service ouvert
     int nbClientsConnectes; // nombre de client connecté
 
     int* clientsConnectes; // tableau de booléens, 1 ssi le client i est connecté
@@ -44,6 +47,13 @@ void afficherSolution(Solution* sol);
  * \return vrai ssi la solution est admissible
  */
 int solutionAdmissible(Solution* sol);
+
+/**
+ * \brief copie d'une solution dans une autre
+ * \param sol la solution à copier
+ * \param copie la copie de sol
+ */
+void copierSolution(Solution* sol, Solution* copie);
 
 /**
  * \brief désallocation mémoire d'une solution

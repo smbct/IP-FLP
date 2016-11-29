@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include <glpk.h>
 
@@ -159,7 +160,7 @@ void construction(Solution* sol) {
 }
 
 //------------------------------------------------------------------------------
-void relaxationContinue(Solution* sol) {
+int relaxationContinue(Solution* sol, Solution* optim) {
 
     Probleme* pb = sol->pb;
 
@@ -195,13 +196,13 @@ void relaxationContinue(Solution* sol) {
             glp_set_col_kind(prob, i*pb->n+j+1, GLP_CV);
             if(sol->varConnexionsAffectees[i][j]) {
                 if(sol->connexions[i][j]) {
-                    glp_set_col_bnds(prob, i, GLP_FX, 1.0, 1.0);
+                    glp_set_col_bnds(prob, i*pb->n+j+1, GLP_FX, 1.0, 1.0);
                 } else {
-                    glp_set_col_bnds(prob, i, GLP_FX, 0.0, 0.0);
+                    glp_set_col_bnds(prob, i*pb->n+j+1, GLP_FX, 0.0, 0.0);
                 }
             } else {
                 // les variables qui ont été fixées le sont dans glpk
-                glp_set_col_bnds(prob, i, GLP_DB, 0.0, 1.0);
+                glp_set_col_bnds(prob, i*pb->n+j+1, GLP_DB, 0.0, 1.0);
             }
         }
     }
@@ -257,10 +258,55 @@ void relaxationContinue(Solution* sol) {
 
     glp_load_matrix(prob, nbCreux, ia, ja, ar);
 
+    glp_write_lp(prob,NULL,"modele.lp");
+
     glp_simplex(prob, NULL);
 
-    sol->z = glp_get_obj_val(prob);
-    // récupération de la solution ?
+    int res = 0;
+
+    int etat = glp_get_status(prob);
+    if(etat != GLP_NOFEAS) {
+        optim->z = glp_get_obj_val(prob);
+
+        // détermination si la solution est entière
+        int entier = 1;
+        int i = 0, j = 0;
+
+        while(entier && i < pb->m) {
+            j = 0;
+            while(entier && j < pb->n) {
+                double val = glp_get_col_prim(prob, i*pb->n+j+1);
+                double dec = val - floor(val);
+                if(dec > 1e-6) {
+                    entier = 0;
+                } else {
+                    optim->connexions[i][j] = (int)floor(0.5+val);
+                }
+                j ++;
+            }
+            i ++;
+        }
+
+        i = 0;
+        while(entier && i < pb->m) {
+            double val = glp_get_col_prim(prob, pb->m*pb->n+i+1);
+            double dec = val - floor(val);
+            if(dec > 1e-6) {
+                entier = 0;
+            } else {
+                optim->services[i] = (int)floor(0.5+val);
+            }
+            i ++;
+        }
+
+        if(entier) {
+            res = 1;
+        }
+
+    } else {
+        res = -1;
+    }
+
 
     glp_delete_prob(prob);
 
@@ -268,6 +314,7 @@ void relaxationContinue(Solution* sol) {
     free(ja);
     free(ar);
 
+    return res;
 }
 
 //------------------------------------------------------------------------------
