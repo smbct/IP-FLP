@@ -143,9 +143,9 @@ void construction(Solution* sol) {
     /*printf("nbClientAffecte : %d\n", nbClientAffecte);
     printf("nbServiceOuvert : %d\n", nbServiceOuvert);*/
 
-    /*if(nbClientAffecte < sol->pb->n) {
-        printf("Problème impossible\n");
-    }*/
+    if(nbClientAffecte < sol->pb->n) {
+        printf("Solution non réalisable\n");
+    }
 
     free(cmin);
     for(int i = 0; i < sol->pb->m;i++) {

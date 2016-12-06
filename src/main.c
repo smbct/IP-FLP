@@ -26,9 +26,12 @@ int main(int argc, char* argv[]) {
         Solution sol;
 
         creerSolution(&pb, &sol);
+        construction(&sol);
 
-        printf("Lancement du branch & bound\n");
-        branchBound(&sol);
+        afficherSolution(&sol);
+
+        // printf("Lancement du branch & bound\n");
+        // branchBound(&sol);
 
         detruireSolution(&sol);
 
