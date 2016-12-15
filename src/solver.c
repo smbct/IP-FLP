@@ -16,9 +16,11 @@ void branchBound(Solution* sol) {
     construction(&best);
     printf("Valeur initiale : %lf\n", best.z);
 
+    printf("\n\nLancement du B&B \n\n");
+
     branchBoundRec(sol, &duale, &best);
 
-    printf("Valeur optimale : z = %lf\n", best.z);
+    copierSolution(&best, sol);
 
     detruireSolution(&duale);
     detruireSolution(&best);
@@ -27,8 +29,6 @@ void branchBound(Solution* sol) {
 
 //------------------------------------------------------------------------------
 void branchBoundRec(Solution* sol, Solution* duale, Solution* best) {
-
-    printf("bb rec\n");
 
     printf("\tDEBUG\n");
     printf("services affectés : \n");
@@ -57,11 +57,12 @@ void branchBoundRec(Solution* sol, Solution* duale, Solution* best) {
 
     printf("nbConn fixées : %d\n", sol->nbVarConnFixees);
 
+    printf("\n\n\n");
+
     // si la relaxation ne permet pas de couper, le branchement est obligatoire
     if(resRelax == 0 && duale->z < best->z) {
 
         // branchement d'abord sur les services
-
         if(sol->nbVarServicesFixees < sol->pb->n) { // fixation de l'ouverture d'un service
 
             sol->varServicesAffectees[sol->nbVarServicesFixees] = 1;
@@ -74,6 +75,10 @@ void branchBoundRec(Solution* sol, Solution* duale, Solution* best) {
             // fixation à 1
             sol->services[sol->nbVarServicesFixees-1] = 1;
             branchBoundRec(sol, duale, best);
+
+            // ensuite l'affectation de la variable est annulée
+            sol->nbVarServicesFixees --;
+            sol->varServicesAffectees[sol->nbVarServicesFixees] = 0;
 
         } else if(sol->nbVarConnFixees < sol->pb->n*sol->pb->m) { // fixation d'une connexion
 
@@ -95,9 +100,14 @@ void branchBoundRec(Solution* sol, Solution* duale, Solution* best) {
             }
 
             // sauvegarde des variables qui étaient déjà affectées
+            // indique si le client était déjà connecté à un service ou non
             int* dejaAffecte = malloc((long unsigned int)sol->pb->m*sizeof(int));
             for(int l = 0; l < sol->pb->m; l ++) {
-                dejaAffecte[l] = 0;
+                if(sol->clientsConnectes[l]) {
+                    dejaAffecte[l] = 1;
+                } else {
+                    dejaAffecte[l] = 0;
+                }
             }
 
             // branchement sur cette variable
@@ -138,14 +148,25 @@ void branchBoundRec(Solution* sol, Solution* duale, Solution* best) {
             free(dejaAffecte);
         }
 
-        // branchement ensuite sur les cennexions
+        // branchement ensuite sur les connexions
 
     } else if(resRelax == 1) {
+        printf("La solution obtenue est entière, pas besoin de brancher\n");
         // solution entière, pas besoin brancher et en plus une solution entière de plus
         if(duale->z < best->z) { // meilleure solution mise à jour
             copierSolution(duale, best);
         }
         printf("meilleure solution : %lf\n", duale->z);
+    } else {
+
+        printf("branche coupée :\n");
+
+        if(resRelax == -1) {
+            printf("Le sous problème actuel n'admet aucune solution\n");
+        } else {
+            printf("La relaxation continue n'est pas mieux que la meilleure solution connue\n");
+        }
+        printf("\n\n\n");
     }
 
 }

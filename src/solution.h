@@ -36,7 +36,7 @@ typedef struct {
 void creerSolution(Probleme* pb, Solution* sol);
 
 /**
- * \brief affochage de la solution
+ * \brief affichage de la solution
  * \brief sol la solution à afficher
  */
 void afficherSolution(Solution* sol);
