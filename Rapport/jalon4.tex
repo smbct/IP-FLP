@@ -1,0 +1,15 @@
+\section{Introduction}
+
+Dans cette partie, un branch and bound est mis en oeuvre pour résoudre le problème de SSCFLP.
+Il fait appel à glpk pour la relaxation continue.
+
+\section{Méthodes de branchement}
+
+\subsection{Variable de branchement}
+
+Il a d'abord été testé de brancher sur les services en premier lieu, et sur les clients en deuxième.
+Le branchement sur un service permet ensuite d'induire un certain nombre d'affectation pour les clients.
+En effet, un service affecté à 0 implique que tous les clients ne pourront pas lui être connecté et donc les variables correspondants à ces clients auront une valeur de 0. \newline
+
+Dans la modélisation du problème, un client n'est affecté qu'à un seul service. Du coup, pas besoin de garder en mémoire toutes les variables de connexions.
+Seulement un tableau des variables affectées et un tableau de service auxquels un client est affecté.
