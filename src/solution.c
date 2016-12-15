@@ -12,17 +12,9 @@ void creerSolution(Probleme* pb, Solution* sol) {
 
     sol->pb = pb;
 
-    sol->connexions = malloc((long unsigned int)pb->m*sizeof(double));
-    for(int i = 0; i < sol->pb->m; i++) {
-        sol->connexions[i] = malloc((long unsigned int)pb->n*sizeof(double));
-        for(int j = 0; j < pb->n; j++) {
-            sol->connexions[i][j] = 0.;
-        }
-    }
-
     sol->services = malloc((long unsigned int)pb->m*sizeof(double));
     for(int i = 0; i < pb->m; i++) {
-        sol->services[i] = 0;
+        sol->services[i] = -1; // variable non affectée
     }
 
     sol->capaRestantes = malloc((long unsigned int)pb->m*sizeof(double));
@@ -34,27 +26,14 @@ void creerSolution(Probleme* pb, Solution* sol) {
 
     sol->nbServicesOuverts = 0;
     sol->nbClientsConnectes = 0;
-    sol->clientsConnectes = malloc((long unsigned int)pb->n*sizeof(int));
+
+    sol->connexionClient = malloc((long unsigned int)pb->n*sizeof(int));
     for(int i = 0; i < pb->n; i++) {
-        sol->clientsConnectes[i] = 0;
+        sol->connexionClient[i] = -1; // variable non affectée
     }
 
-    sol->varConnexionsAffectees = malloc((long unsigned int)pb->m*sizeof(int*));
-    for(int i = 0; i < pb->m; i++) {
-        sol->varConnexionsAffectees[i] = malloc((long unsigned int)pb->n*sizeof(int));
-        for(int j = 0; j < pb->n; j++) {
-            sol->varConnexionsAffectees[i][j] = 0;
-        }
-    }
-
-    sol->varServicesAffectees = malloc((long unsigned int)pb->m*sizeof(int));
-    for(int i = 0; i < pb->m; i++) {
-        sol->varServicesAffectees[i] = 0;
-    }
-
-    sol->nbVarConnFixees = 0;
+    sol->nbVarClientFixees = 0;
     sol->nbVarServicesFixees = 0;
-
 
 }
 
@@ -62,12 +41,11 @@ void creerSolution(Probleme* pb, Solution* sol) {
 void afficherSolution(Solution* sol) {
 
     printf("connexions :\n");
-    for(int i = 0; i < sol->pb->m; i++) {
-        for(int j = 0; j < sol->pb->n; j++) {
-            printf("%lf, ", sol->connexions[i][j]);
-        }
-        printf("\n");
+    for(int i = 0; i < sol->pb->n; i++) {
+        printf("%d, ", sol->connexionClient[i]);
     }
+    printf("\n");
+
     printf("\nservices ouverts :\n");
     for(int i = 0; i < sol->pb->m; i++) {
         printf("%d, ", sol->services[i]);
@@ -86,7 +64,7 @@ int solutionAdmissible(Solution* sol) {
     for(int i = 0; i < sol->pb->m; i++) {
         double somme = 0;
         for(int j = 0; j < sol->pb->n; j++) {
-            if(sol->connexions[i][j]) {
+            if(sol->connexionClient[j] == i) { // si le client j est connecté à i, la demande est prise en compte
                 somme += sol->pb->demandes[j];
             }
         }
@@ -95,17 +73,8 @@ int solutionAdmissible(Solution* sol) {
         }
     }
     // vérif que tous les clients sont connectés une et une seule fois
-    for(int j = 0; j < sol->pb->n; j++) {
-        int nbFois = 0;
-        for(int i = 0; i < sol->pb->m;i++) {
-            if(sol->connexions[i][j]) {
-                nbFois ++;
-                if(sol->services[i] == 0) {
-                    res = 0;
-                }
-            }
-        }
-        if(nbFois != 1) {
+    for(int i = 0; i < sol->pb->n; i++) {
+        if(sol->connexionClient[i] < 0 || sol->connexionClient[i] >= sol->pb->m) {
             res = 0;
         }
     }
@@ -120,20 +89,14 @@ void copierSolution(Solution* sol, Solution* copie) {
     copie->pb = sol->pb;
     // valeurs des variables
     for(int i = 0; i < sol->pb->m; i++) {
-        for(int j = 0; j < sol->pb->n; j++) {
-            copie->connexions[i][j] = sol->connexions[i][j];
-        }
         copie->services[i] = sol->services[i];
-        copie->varServicesAffectees[i] = sol->varServicesAffectees[i];
         copie->capaRestantes[i] = sol->capaRestantes[i];
     }
 
     for(int i = 0; i < sol->pb->n; i++) {
-        copie->varConnexionsAffectees[i] = sol->varConnexionsAffectees[i];
-        copie->clientsConnectes[i] = sol->clientsConnectes[i];
+        copie->connexionClient[i] = sol->connexionClient[i];
     }
 
-    copie->nbVarConnFixees = sol->nbVarConnFixees;
     copie->nbVarServicesFixees = sol->nbVarServicesFixees;
     copie->nbServicesOuverts = sol->nbServicesOuverts;
     copie->nbClientsConnectes = sol->nbClientsConnectes;
@@ -146,16 +109,6 @@ void detruireSolution(Solution* sol) {
 
     free(sol->capaRestantes);
 
-    for(int i = 0; i < sol->pb->m; i++) {
-        free(sol->connexions[i]);
-    }
-    free(sol->connexions);
     free(sol->services);
-    free(sol->clientsConnectes);
-
-    for(int i = 0; i < sol->pb->m; i++) {
-        free(sol->varConnexionsAffectees[i]);
-    }
-    free(sol->varConnexionsAffectees);
-    free(sol->varServicesAffectees);
+    free(sol->connexionClient);
 }

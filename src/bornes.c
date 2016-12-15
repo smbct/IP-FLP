@@ -48,12 +48,6 @@ void construction(Solution* sol) {
         printf("\n\n");
     }*/
 
-    // tableau des clients affectés
-    int* affectes = malloc((long unsigned int)sol->pb->n*sizeof(int));
-    for(int i = 0; i < sol->pb->n;i++) {
-        affectes[i] = 0;
-    }
-
     // tableau des clients par service triés en fonction des deltas
     int** clientsTries = malloc((long unsigned int)sol->pb->m*sizeof(int*));
     for(int i = 0; i < sol->pb->m; i++) {
@@ -82,6 +76,8 @@ void construction(Solution* sol) {
     int nbServiceOuvert = 0;
 
     int continuer = 1;
+
+
     while(nbClientAffecte < sol->pb->n && nbServiceOuvert < sol->pb->m) { // tant que tous les clients ne sont pas affectés
 
         // sélection du service à ouvrir
@@ -91,7 +87,7 @@ void construction(Solution* sol) {
         // calcul de l'utilité min sur tous les services non affectés
         for(int i = 0; i < sol->pb->m; i++) {
 
-            if(!sol->services[i]) {
+            if(sol->services[i] != 1) {
 
                 // calcul de l'utilité pour chaque service
                 double utilite = sol->pb->couts[i];
@@ -102,7 +98,7 @@ void construction(Solution* sol) {
 
                 // prise en compte des clients que l'on peut affecter
                 while(indClient < sol->pb->n) {
-                    if(!affectes[clientsTries[i][indClient]] && sol->pb->demandes[clientsTries[i][indClient]] <= capaRestante) {
+                    if(sol->connexionClient[clientsTries[i][indClient]] == -1 && sol->pb->demandes[clientsTries[i][indClient]] <= capaRestante) {
                         nbClientAjout ++;
                         capaRestante -= sol->pb->demandes[clientsTries[i][indClient]];
                         utilite += deltas[i][clientsTries[i][indClient]];
@@ -127,12 +123,10 @@ void construction(Solution* sol) {
         // affectation des clients
         int indClient = 0;
         while(indClient < sol->pb->n) {
-
             // si les conditions sont vérifiées, le client est affecté
-            if(!affectes[clientsTries[serviceMin][indClient]] && sol->pb->demandes[clientsTries[serviceMin][indClient]] <= sol->capaRestantes[serviceMin]) {
-                sol->connexions[serviceMin][clientsTries[serviceMin][indClient]] = 1.;
+            if(sol->connexionClient[clientsTries[serviceMin][indClient]] == -1 && sol->pb->demandes[clientsTries[serviceMin][indClient]] <= sol->capaRestantes[serviceMin]) {
+                sol->connexionClient[clientsTries[serviceMin][indClient]] = serviceMin;
                 sol->z += sol->pb->liaisons[serviceMin][clientsTries[serviceMin][indClient]]; // prise en compte du cout de connexion
-                affectes[clientsTries[serviceMin][indClient]] = 1;
                 sol->capaRestantes[serviceMin] -= sol->pb->demandes[clientsTries[serviceMin][indClient]];
                 nbClientAffecte ++;
             }
@@ -152,7 +146,6 @@ void construction(Solution* sol) {
         free(deltas[i]);
     }
     free(deltas);
-    free(affectes);
     for(int i = 0; i < sol->pb->m; i++) {
         free(clientsTries[i]);
     }
@@ -194,8 +187,8 @@ int relaxationContinue(Solution* sol, Solution* optim) {
     for(int i = 0; i < pb->m; i++) {
         for(int j = 0; j < pb->n; j++) {
             glp_set_col_kind(prob, i*pb->n+j+1, GLP_CV);
-            if(sol->varConnexionsAffectees[i][j]) {
-                if(sol->connexions[i][j]) {
+            if(sol->connexionClient[j] != -1) {
+                if(sol->connexionClient[j] == i) {
                     glp_set_col_bnds(prob, i*pb->n+j+1, GLP_FX, 1.0, 1.0);
                 } else {
                     glp_set_col_bnds(prob, i*pb->n+j+1, GLP_FX, 0.0, 0.0);
@@ -209,7 +202,7 @@ int relaxationContinue(Solution* sol, Solution* optim) {
 
     for(int i = 0; i < pb->m; i++) {
         // les variables qui ont été fixées le sont dans glpk
-        if(sol->varServicesAffectees[i]) {
+        if(sol->services[i] != -1) {
             if(sol->services[i]) {
                 glp_set_col_bnds(prob, pb->n*pb->m+i+1, GLP_FX, 1.0, 1.0);
             } else {
@@ -279,8 +272,8 @@ int relaxationContinue(Solution* sol, Solution* optim) {
                 double dec = val - floor(val);
                 if(dec > 1e-6) {
                     entier = 0;
-                } else {
-                    optim->connexions[i][j] = (int)floor(0.5+val);
+                } else if(val >= 0.5) { // x_{ij} = 1 => i connecté à j
+                    optim->connexionClient[j] = i;
                 }
                 j ++;
             }
