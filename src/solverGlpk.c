@@ -129,7 +129,8 @@ void resoudre(char* instance, Solution* sol) {
 
     glp_load_matrix(prob, nbCreux, ia, ja, ar);
 
-    glp_write_lp(prob,NULL,"modele.lp");
+    // sortie dans un modèle pour vérifier
+    // glp_write_lp(prob,NULL,"modele.lp");
 
     glp_simplex(prob, NULL);
     int res = glp_intopt(prob, &param);
@@ -140,7 +141,9 @@ void resoudre(char* instance, Solution* sol) {
     // lecture des connexions
     for(int i = 0; i < pb.m; i++) {
         for(int j = 0; j < pb.n; j++) {
-            sol->connexions[i][j] = (int)(glp_mip_col_val(prob, i*pb.n+j+1)+0.5);
+            if(glp_mip_col_val(prob, i*pb.n+j+1) >= 0.5) {
+                sol->connexionClient[j] = i;
+            }
         }
     }
 
