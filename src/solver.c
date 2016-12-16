@@ -9,8 +9,6 @@
 #include "solver.h"
 #include "bornes.h"
 
-#include "listeAffectation.h"
-
 //------------------------------------------------------------------------------
 void branchBound(Solution* sol) {
 
@@ -148,13 +146,73 @@ void branchBoundIter(Solution* sol) {
 
     ListeAffectation liste;
     creerListeAffectation(&liste);
+
+    // ajout du premier service
     ajouterService(&liste, 0);
+    sol->nbVarServicesFixees ++;
+    sol->services[0] = 0;
 
-    /*while(!listeVide(&liste)) {
+    while(!listeVide(&liste)) {
 
+        printf("------------------------DEBUG--------------------------\n");
+        printf("nb service affecté : %d\n", liste.nbService);
+        printf("nb client affecté : %d\n", liste.nbClient);
+        printf("meilleure valeur trouvée : %lf\n", best.z);
 
-    }*/
+        printf("Affectation des variables de service :\n");
+        for(int i = 0; i < sol->pb->m; i++) {
+            printf("%d, ", sol->services[i]);
+        }
+        printf("\nAffectation des variables de clients :\n");
+        for(int i = 0; i < sol->pb->n; i++) {
+            printf("%d, ", sol->connexionClient[i]);
+        }
+        printf("\n");
 
+        // relaxation continue
+        int resRelax = relaxationContinue(sol, &duale);
+
+        printf("Résultat de la relaxation continue : %d, z = %lf\n", resRelax, duale.z);
+
+        if(resRelax == 0 && duale.z < best.z) { // relaxation non entière
+
+            // ajout d'affectation si nécessaire
+            if(liste.nbService < sol->pb->m) {
+                sol->services[liste.nbService] = 0;
+                sol->nbVarServicesFixees ++;
+                ajouterService(&liste, liste.nbService);
+            } else if(liste.nbClient < sol->pb->n) {
+                sol->connexionClient[liste.nbClient] = 0;
+                sol->nbVarClientFixees ++;
+                ajouterClient(&liste, liste.nbClient);
+            } else { // problème fixé, calcul de la solution
+
+                // vérification de la solution
+                // ne doit pas arriver par la relaxation
+
+            }
+
+        } else if(resRelax == 1) { // relaxation entière, vérif et backtrack
+
+            printf("Relaxation continue donne une solution entière : z = %lf\n", duale.z);
+
+            if(duale.z < best.z) { // une meilleure solution est trouvée, mise à jour
+                copierSolution(&duale, &best);
+            }
+            // après ça, backtracking
+            backtrack(&liste, sol);
+
+        } else { // problème impossible
+
+            backtrack(&liste, sol);
+
+        }
+
+        printf("----------------------FIN DEBUG------------------------\n\n\n\n");
+
+    }
+
+    copierSolution(&best, sol);
 
     detruireSolution(&duale);
     detruireSolution(&best);
@@ -162,24 +220,51 @@ void branchBoundIter(Solution* sol) {
 }
 
 //------------------------------------------------------------------------------
-void backtrack(ListeAffectation* liste) {
+int backtrack(ListeAffectation* liste, Solution* sol) {
+    
+    printf("...backtracking\n");
 
-    // tant qu'une affectation à faire n'a pas été trouvée, on pop
-
-    bool continuer = true;
+    int continuer = 1;
+    int vide = 0;
 
     while(continuer) {
 
-        // le dernier de la liste est popé
-        if(liste->nbClient > 0) { // un client est popé
+        // l'affectation suivante est tentée, sinon le nouveau dernier est popé
+        if(liste->nbClient > 0) { // tentative d'affectation du dernier client
+            if(liste->dernierClient->valeur < sol->pb->n) {
+                sol->capaRestantes[liste->dernierClient->valeur] += sol->pb->demandes[liste->dernierClient->client];
+                liste->dernierClient->valeur ++;
+                sol->connexionClient[liste->dernierClient->client] ++;
+                sol->capaRestantes[liste->dernierClient->valeur] -= sol->pb->demandes[liste->dernierClient->client];
+                continuer = 0;
+            }
+        } else if(liste->nbService > 0) {
+            if(liste->dernierService->valeur < 1) {
+                liste->dernierService->valeur = 1;
+                sol->services[liste->dernierService->service] = 1;
+                continuer = 0;
+            }
+        }
 
-        } else if(liste->nbSerivec > 0) { // un service est popé
+        if(continuer) { // si aucune affectation n'a pu être faite, le backtrack continue, la dernière affectation est popée
+
+            // le dernier de la liste est popé
+            if(liste->nbClient > 0) { // un client est popé
+                popAffectationClient(liste);
+                sol->connexionClient[liste->nbClient] = -1;
+                sol->nbVarClientFixees --;
+            } else if(liste->nbService > 0) { // un service est popé
+                popAffectationService(liste);
+                sol->services[liste->nbService] = -1;
+                sol->nbVarServicesFixees --;
+            } else {
+                vide = 1;
+                continuer = 0;
+            }
 
         }
 
-        // l'affectation suivante est tenté, sinon le nouveau dernier est popé
-
-
     }
 
+    return !vide;
 }

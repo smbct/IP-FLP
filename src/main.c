@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
         creerSolution(&pb, &sol);
 
         // printf("Lancement du branch & bound\n");
-        branchBound(&sol);
+        branchBoundIter(&sol);
 
         // printf("Solution optimale : \n");
 
