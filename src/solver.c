@@ -9,6 +9,8 @@
 #include "solver.h"
 #include "bornes.h"
 
+#include "listeAffectation.h"
+
 //------------------------------------------------------------------------------
 void branchBound(Solution* sol) {
 
@@ -144,9 +146,40 @@ void branchBoundIter(Solution* sol) {
 
     printf("\n\nLancement du B&B \n\n");
 
+    ListeAffectation liste;
+    creerListeAffectation(&liste);
+    ajouterService(&liste, 0);
+
+    /*while(!listeVide(&liste)) {
+
+
+    }*/
 
 
     detruireSolution(&duale);
     detruireSolution(&best);
+
+}
+
+//------------------------------------------------------------------------------
+void backtrack(ListeAffectation* liste) {
+
+    // tant qu'une affectation à faire n'a pas été trouvée, on pop
+
+    bool continuer = true;
+
+    while(continuer) {
+
+        // le dernier de la liste est popé
+        if(liste->nbClient > 0) { // un client est popé
+
+        } else if(liste->nbSerivec > 0) { // un service est popé
+
+        }
+
+        // l'affectation suivante est tenté, sinon le nouveau dernier est popé
+
+
+    }
 
 }
