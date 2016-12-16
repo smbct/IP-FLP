@@ -39,12 +39,11 @@ void branchBoundRec(Solution* sol, Solution* duale, Solution* best) {
         printf("%d, ", sol->services[i]);
     }
 
-    printf("\n\nconnexions affectées : \n");
+    printf("\nclients affectées : \n");
     for(int i = 0; i < sol->pb->n; i++) {
         printf("%d, ", sol->connexionClient[i]);
     }
     printf("\n");
-    printf("\tFIN DEBUG\n\n");
 
     // relaxation continue
     int resRelax = relaxationContinue(sol, duale);
@@ -52,7 +51,13 @@ void branchBoundRec(Solution* sol, Solution* duale, Solution* best) {
     printf("relaxation : %lf\n", duale->z);
     printf("res relax continue : %d\n", resRelax);
 
-    printf("nbConn fixées : %d\n", sol->nbVarClientFixees);
+    printf("nb services fixés : %d\n", sol->nbVarServicesFixees);
+    printf("nb clients fixés : %d\n", sol->nbVarClientFixees);
+
+    printf("meilleure solution connue : %lf\n", best->z);
+
+    printf("\n");
+    printf("\tFIN DEBUG\n\n");
 
     printf("\n\n\n");
 
@@ -60,7 +65,7 @@ void branchBoundRec(Solution* sol, Solution* duale, Solution* best) {
     if(resRelax == 0 && duale->z < best->z) {
 
         // branchement d'abord sur les services
-        if(sol->nbVarServicesFixees < sol->pb->n) { // fixation de l'ouverture d'un service
+        if(sol->nbVarServicesFixees < sol->pb->m) { // fixation de l'ouverture d'un service
 
             sol->nbVarServicesFixees ++;
 
@@ -76,23 +81,16 @@ void branchBoundRec(Solution* sol, Solution* duale, Solution* best) {
             sol->nbVarServicesFixees --;
             sol->services[sol->nbVarServicesFixees] = -1;
 
-        } else if(sol->nbVarClientFixees < sol->pb->n*sol->pb->m) { // fixation d'un client
+        } else if(sol->nbVarClientFixees < sol->pb->n) { // fixation d'un client
 
-            // recherche d'un client pas encore affecté
-            int j = 0, trouve = 0;
-
-            while(!trouve && j < sol->pb->n) {
-                if(sol->connexionClient[j] != -1) {
-                    trouve = 1;
-                } else {
-                    j ++;
-                }
-            }
+            // affectation du prochain client
+            // TODO : ordre d'affectation des clients
+            int client = sol->nbVarClientFixees;
 
             // branchement sur cette variable
             sol->nbVarClientFixees ++;
 
-            printf("affectation client %d\n", j);
+            printf("affectation client %d\n", client);
 
             // on essaie de connecter le client à chacun des services, quand c'est possible
 
@@ -100,16 +98,16 @@ void branchBoundRec(Solution* sol, Solution* duale, Solution* best) {
                 // on peut vérifier facilement si la solution reste admissible en terme de respet des capacités
                 // if(sol->capaRestantes[i] <= sol->pb->demandes[j]) {
                     printf("test\n");
-                    sol->capaRestantes[i] -= sol->pb->demandes[j];
-                    sol->connexionClient[j] = i;
+                    sol->capaRestantes[i] -= sol->pb->demandes[client];
+                    sol->connexionClient[client] = i;
                     branchBoundRec(sol, duale, best);
-                    sol->capaRestantes[i] += sol->pb->demandes[j];
+                    sol->capaRestantes[i] += sol->pb->demandes[client];
                 // }
             }
 
             // ensuite la variable redevient libre
-            // sol->nbVarClientFixees --;
-            // sol->connexionClient[j] = -1;
+            sol->nbVarClientFixees --;
+            sol->connexionClient[client] = -1;
 
         }
 
@@ -131,5 +129,24 @@ void branchBoundRec(Solution* sol, Solution* duale, Solution* best) {
         }
         printf("\n\n\n");
     }
+
+}
+
+//------------------------------------------------------------------------------
+void branchBoundIter(Solution* sol) {
+
+    Solution duale, best;
+    creerSolution(sol->pb, &duale);
+    creerSolution(sol->pb, &best);
+
+    construction(&best);
+    printf("Valeur initiale : %lf\n", best.z);
+
+    printf("\n\nLancement du B&B \n\n");
+
+
+
+    detruireSolution(&duale);
+    detruireSolution(&best);
 
 }

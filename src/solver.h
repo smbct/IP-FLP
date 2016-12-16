@@ -14,7 +14,12 @@
  */
 void branchBoundRec(Solution* sol, Solution* duale, Solution* best);
 
+/**
+ * \brief effectue un branch & bound de manière itérative
+ * \param sol une solution vide du problème
+ */
+void branchBoundIter(Solution* sol);
 
 void branchBound(Solution* sol);
 
-#endif
+#endif // SOLVER_H
