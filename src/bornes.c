@@ -77,7 +77,6 @@ void construction(Solution* sol) {
 
     int continuer = 1;
 
-
     while(nbClientAffecte < sol->pb->n && nbServiceOuvert < sol->pb->m) { // tant que tous les clients ne sont pas affectés
 
         // sélection du service à ouvrir

@@ -103,6 +103,8 @@ void branchBoundRec(Solution* sol, Solution* duale, Solution* best) {
             // branchement sur cette variable
             sol->nbVarClientFixees ++;
 
+            printf("affectation client %d\n", j);
+
             // on essaie de connecter le client à chacun des services, quand c'est possible
 
             for(int i = 0; i < sol->pb->m; i++) {
