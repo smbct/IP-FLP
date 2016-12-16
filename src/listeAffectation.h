@@ -61,7 +61,7 @@ void ajouterService(ListeAffectation* liste, int service);
  * \param liste la liste à modifier
  * \param client l'indice du client à affecter
  */
-void ajoutClient(ListeAffectation* liste, int client);
+void ajouterClient(ListeAffectation* liste, int client);
 
 /**
  * \brief retire la dernière affectation de client effectuée

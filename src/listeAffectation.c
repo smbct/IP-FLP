@@ -33,7 +33,7 @@ void ajouterService(ListeAffectation* liste, int service) {
 }
 
 //------------------------------------------------------------------------------
-void ajoutClient(ListeAffectation* liste, int client) {
+void ajouterClient(ListeAffectation* liste, int client) {
     MaillonClient* maillon = malloc(sizeof(MaillonClient));
     maillon->client = client;
     maillon->valeur = 0;

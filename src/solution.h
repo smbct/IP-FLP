@@ -11,7 +11,7 @@
 typedef struct {
 
     int* services; // les états des services
-    int* connexionClient; // tableau d'entiers, indique le service auquer est connecté le client i
+    int* connexionClient; // tableau d'entiers, indique le service auquel est connecté le client i
 
     int nbServicesOuverts; // nombre de service ouvert
     int nbClientsConnectes; // nombre de client connecté
