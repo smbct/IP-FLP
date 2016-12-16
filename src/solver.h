@@ -20,6 +20,14 @@ void branchBoundRec(Solution* sol, Solution* duale, Solution* best);
  */
 void branchBoundIter(Solution* sol);
 
+
+/**
+ * \brief backtrack dans l'arbre de résolution du problème
+ */
+void backtrack(ListeAffectation* liste);
+
 void branchBound(Solution* sol);
+
+
 
 #endif // SOLVER_H
