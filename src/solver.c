@@ -89,17 +89,6 @@ void branchBoundRec(Solution* sol, Solution* duale, Solution* best) {
                 }
             }
 
-            // sauvegarde des variables qui étaient déjà affectées
-            // indique si le client était déjà connecté à un service ou non
-            int* dejaAffecte = malloc((long unsigned int)sol->pb->m*sizeof(int));
-            for(int l = 0; l < sol->pb->m; l ++) {
-                if(sol->connexionClient[l]) {
-                    dejaAffecte[l] = 1;
-                } else {
-                    dejaAffecte[l] = 0;
-                }
-            }
-
             // branchement sur cette variable
             sol->nbVarClientFixees ++;
 
@@ -107,17 +96,21 @@ void branchBoundRec(Solution* sol, Solution* duale, Solution* best) {
 
             // on essaie de connecter le client à chacun des services, quand c'est possible
 
-            for(int i = 0; i < sol->pb->m; i++) {
-                // on peut vérifier facilement si la solution reste admissible
-                sol->connexionClient[j] = i;
-                branchBoundRec(sol, duale, best);
+            for(int i = 0; i < sol->pb->n; i++) {
+                // on peut vérifier facilement si la solution reste admissible en terme de respet des capacités
+                // if(sol->capaRestantes[i] <= sol->pb->demandes[j]) {
+                    printf("test\n");
+                    sol->capaRestantes[i] -= sol->pb->demandes[j];
+                    sol->connexionClient[j] = i;
+                    branchBoundRec(sol, duale, best);
+                    sol->capaRestantes[i] += sol->pb->demandes[j];
+                // }
             }
 
             // ensuite la variable redevient libre
-            sol->nbVarClientFixees --;
-            sol->connexionClient[j] = -1;
+            // sol->nbVarClientFixees --;
+            // sol->connexionClient[j] = -1;
 
-            free(dejaAffecte);
         }
 
     } else if(resRelax == 1) {
