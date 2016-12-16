@@ -1,5 +1,5 @@
 /**
- * \file brones.h
+ * \file bornes.h
  * \brief définitions de fonctions de calcul de bornes pour le SSCFLP
  */
 
