@@ -143,7 +143,7 @@ void branchBoundIter(Solution* sol) {
     printf("Valeur initiale : %lf\n", best.z);
 
     printf("valeur initiale oracle : 8849\n");
-    best.z = 8849;
+    best.z = 8848.1;
 
     printf("\n\nLancement du B&B \n\n");
 
@@ -265,9 +265,6 @@ int backtrack(ListeAffectation* liste, Solution* sol, Solution* best) {
                 sol->connexionClient[liste->dernierClient->client] ++;
                 sol->capaRestantes[liste->dernierClient->valeur] -= sol->pb->demandes[liste->dernierClient->client];
                 sol->z += sol->pb->liaisons[liste->dernierClient->valeur][liste->dernierClient->client];
-
-                // printf("capa restante : %lf\n", sol->capaRestantes[liste->dernierClient->valeur]);
-
                 // on peut tester directement que les capacités sont bien respectées
                 if(sol->capaRestantes[liste->dernierClient->valeur] >= 0 && sol->z < best->z) {
                     continuer = 0; // si les capacités sont bonnes, on peut effectuer la relaxation continue
@@ -286,7 +283,7 @@ int backtrack(ListeAffectation* liste, Solution* sol, Solution* best) {
                     continuer = 0;
                     retirer = 0;
                 }
-                
+
             }
         }
 

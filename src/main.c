@@ -12,6 +12,8 @@
 #include "bornes.h"
 #include "solver.h"
 
+#include "aco.h"
+
 //------------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
 
@@ -27,8 +29,10 @@ int main(int argc, char* argv[]) {
 
         creerSolution(&pb, &sol);
 
+        construireACO(&sol);
+
         // printf("Lancement du branch & bound\n");
-        branchBoundIter(&sol);
+        // branchBoundIter(&sol);
 
         // printf("Solution optimale : \n");
 

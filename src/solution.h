@@ -32,6 +32,12 @@ typedef struct {
 void creerSolution(Probleme* pb, Solution* sol);
 
 /**
+ * \brief remet une solution à 0
+ * \param sol la solution à remetre à 0
+ */
+void resetSolution(Solution* sol);
+
+/**
  * \brief affichage de la solution
  * \brief sol la solution à afficher
  */

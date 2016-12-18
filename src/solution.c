@@ -38,6 +38,29 @@ void creerSolution(Probleme* pb, Solution* sol) {
 }
 
 //------------------------------------------------------------------------------
+void resetSolution(Solution* sol) {
+
+    // remise à 0 des capacités restantes et des services
+    for(int i = 0; i < sol->pb->m; i++) {
+        sol->services[i] = -1;
+        sol->capaRestantes[i] = sol->pb->capacites[i];
+    }
+    sol->nbVarServicesFixees = 0;
+
+    // remise à 0 des connexions
+    for(int i = 0; i < sol->pb->n; i++) {
+        sol->connexionClient[i] = -1;
+    }
+    sol->nbVarClientFixees = 0;
+
+    sol->nbServicesOuverts = 0;
+    sol->nbClientsConnectes = 0;
+
+    sol->z = 0.;
+
+}
+
+//------------------------------------------------------------------------------
 void afficherSolution(Solution* sol) {
 
     printf("connexions :\n");
