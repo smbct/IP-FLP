@@ -12,4 +12,23 @@ Le branchement sur un service permet ensuite d'induire un certain nombre d'affec
 En effet, un service affecté à 0 implique que tous les clients ne pourront pas lui être connecté et donc les variables correspondants à ces clients auront une valeur de 0. \newline
 
 Dans la modélisation du problème, un client n'est affecté qu'à un seul service. Du coup, pas besoin de garder en mémoire toutes les variables de connexions.
-Seulement un tableau des variables affectées et un tableau de service auxquels un client est affecté.
+Seulement un tableau des variables affectées et un tableau de service auxquels un client est affecté. \newline
+
+\subsection{Couper dans l'arbre de recherche}
+
+On peut également être malin dans le branch and bound en essayant d'exploiter des informations facilement au lieu de laisser glpk tour faire.
+La contrainte à tester la plus évidente pour ça est le respect des capacités des services.
+On peut mettre à jour progressivement les capacités restantes et couper à partir du moment où une capacité est négative.
+On peut aussi mettre à jour la valeur de z -> on peut alors couper dès que la valeur de z dépasse la meilleure valeur connue -> on se passe du simplexe de la relaxation continue.
+
+\subsection{Idée de borne inf}
+
+Une borne inférieure pour couper dans l'arbre.
+On peut calculer pour une affectation un coût plus petit que celui que l'on aura pour une affectation valide.
+Pour cela, on calcule les valeurs minimales de coûts de connexions des services ouverts.
+On sait que l'on dépensera au mieux cette somme pour l'ouverture. Si la somme est déjà supérieure au meilleur coût trouvé, pas la peine de résoudre.
+
+\section{Bonnes solution de départ}
+
+Pourquoi pas des fourmis ? Il faut une métaheuristique surefficace. Le but est d'aller passer du temps uniquement les branches prometteuses.
+On veut couper le plus facilement possible les autres brancehes.

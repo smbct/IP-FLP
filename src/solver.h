@@ -27,9 +27,10 @@ void branchBoundIter(Solution* sol);
  * \brief backtrack dans l'arbre de résolution du problème
  * \param liste la liste des variables en cours d'affectation
  * \param sol la solution en cours de résolution
+ * \param best la meilleure solution connue à ce stade de la résolution
  * \return faux si la liste d'affectation est vide (la recherche arborescente est alors terminée)
  */
-int backtrack(ListeAffectation* liste, Solution* sol);
+int backtrack(ListeAffectation* liste, Solution* sol, Solution* best);
 
 /**
  * \brief algorithme de branch and bound récursif pour calculer la solution optimale du SSCFLP
