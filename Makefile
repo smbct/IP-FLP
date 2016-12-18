@@ -2,7 +2,7 @@
 CC= gcc
 CFLAGS= -std=c99 -pedantic -Wfatal-errors -Wconversion -Wredundant-decls -Wshadow -Wall -Wextra -O3 -Ofast #-pg
 
-OBJECTS_FILES= src/probleme.o src/solution.o src/bornes.o src/tri.o src/solver.o src/listeAffectation.o
+OBJECTS_FILES= src/probleme.o src/solution.o src/bornes.o src/tri.o src/solver.o src/listeAffectation.o src/aco.o
 
 rapport:
 	pdflatex Rapport/rapport
