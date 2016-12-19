@@ -17,7 +17,7 @@ void construireACO(Solution* best) {
     // initialisation du générateur aléatoire
     srand((unsigned int)time(NULL));
 
-    int nbFourmi = 1000;
+    int nbFourmi = 500;
     Solution* solFourmi = malloc((long unsigned int)nbFourmi*sizeof(Solution));
     for(int i = 0; i < nbFourmi; i++) {
         creerSolution(best->pb, &solFourmi[i]);
@@ -33,25 +33,21 @@ void construireACO(Solution* best) {
     // initialisation des phéromones, de manière équilibrée
     for(int i = 0; i < best->pb->n; i++) {
         for(int j = 0; j < best->pb->m; j++) {
-            pheroConn[i][j] = 1./(double)best->pb->m;
+            pheroConn[i][j] = 1.;
         }
     }
 
     // lancer 100 itérations de fourmis
-    for(int it = 0; it < 1000; it++) {
+    for(int it = 0; it < 500; it++) {
 
         for(int i = 0; i < nbFourmi; i++) {
 
             resetSolution(&solFourmi[i]);
             constructionFourmi(&solFourmi[i], pheroConn);
 
-            if( (best->z < 0. || solFourmi[i].z < best->z) && solFourmi[i].z > 0) {
-                copierSolution(&solFourmi[i], best);
-            }
-
         }
 
-        majPheromones(best->z, nbFourmi, solFourmi, pheroConn);
+        majPheromones(best, nbFourmi, solFourmi, pheroConn);
 
     }
 
@@ -145,10 +141,12 @@ void constructionFourmi(Solution* sol, double** pheroConn) {
 }
 
 //------------------------------------------------------------------------------
-void majPheromones(double best, int nbFourmi, Solution* solFourmi, double** phero) {
+void majPheromones(Solution* best, int nbFourmi, Solution* solFourmi, double** phero) {
 
     double meilleure = -1.;
     double moinsBonne = -1.;
+
+    double bestZ = best->z;
 
     for(int i = 0; i < nbFourmi; i++) {
         if( (meilleure < 0 || solFourmi[i].z < meilleure) && solFourmi[i].z > 0) {
@@ -165,10 +163,17 @@ void majPheromones(double best, int nbFourmi, Solution* solFourmi, double** pher
             if(solFourmi[i].z > 0) {
 
                 double ratio = (solFourmi[i].z-moinsBonne)/(meilleure-moinsBonne);
-                if(solFourmi[i].z > best) {
-                    phero[j][solFourmi[i].connexionClient[j]] *= 1.4*ratio;
-                } else {
-                    phero[j][solFourmi[i].connexionClient[j]] *= 0.98*ratio;
+                // printf("ratio : %lf\n", ratio);
+                if(solFourmi[i].z < bestZ) { // accuentation quand la meilleure solution est dépassée
+                    phero[j][solFourmi[i].connexionClient[j]] *= 1.2;
+                } else { // diminution autrement
+                    phero[j][solFourmi[i].connexionClient[j]] *= 0.99;
+                }
+
+                // mise à jour de la meilleure solution connue
+                if(best->z < 0 || solFourmi[i].z < best->z) {
+                    copierSolution(&solFourmi[i], best);
+                    printf("amélioration : z = %lf\n", best->z);
                 }
 
             }
