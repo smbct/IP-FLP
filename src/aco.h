@@ -28,7 +28,7 @@ void constructionFourmi(Solution* sol, double** pheroConn);
  * \param solFourmi les solutions créées
  * \param phero les traces actuelles
  */
-void majPheromones(double best, int nbFourmi, Solution* solFourmi, double** phero);
+void majPheromones(Solution* best, int nbFourmi, Solution* solFourmi, double** phero);
 
 /*
  * \brief retourne un nombre aléatoire entre min et max
