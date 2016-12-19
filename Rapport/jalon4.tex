@@ -31,4 +31,13 @@ On sait que l'on dépensera au mieux cette somme pour l'ouverture. Si la somme e
 \section{Bonnes solution de départ}
 
 Pourquoi pas des fourmis ? Il faut une métaheuristique surefficace. Le but est d'aller passer du temps uniquement les branches prometteuses.
-On veut couper le plus facilement possible les autres brancehes.
+On veut couper le plus facilement possible les autres branches. \newline
+
+Parcours d'une fourmi : La fourmi commence avec une solution vide, aucun client n'est connecté et aucun service n'est ouvert.
+à chaque étape, elle connecte un client. Les clients sont pris dans l'ordre.
+Le choix du service auquel connecter le client est fait par une roulette biaisée à partir des traces de phéromones présentes pour chaque choix.
+Les phéromones sont donc un tableau deux dimensions de nbClient x nbServices.
+Après le passage de chaque fourmi d'une itération les phéromones sont mise à jours.
+Si le passage est un passage appartient à une solution améliorant la solution, alors la trace de phéromone est accentuée.
+Si ce n'est pas le cas, la trace est diminuée. La modification de la trace prend en compte le taux d'amélioration ou de dégradation.
+Il faudrait également que la modification prenne en compte le fait d'ouvrir un service ou non.
