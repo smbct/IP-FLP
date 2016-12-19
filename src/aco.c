@@ -17,7 +17,7 @@ void construireACO(Solution* best) {
     // initialisation du générateur aléatoire
     srand((unsigned int)time(NULL));
 
-    int nbFourmi = 500;
+    int nbFourmi = 50;
     Solution* solFourmi = malloc((long unsigned int)nbFourmi*sizeof(Solution));
     for(int i = 0; i < nbFourmi; i++) {
         creerSolution(best->pb, &solFourmi[i]);
@@ -33,13 +33,14 @@ void construireACO(Solution* best) {
     // initialisation des phéromones, de manière équilibrée
     for(int i = 0; i < best->pb->n; i++) {
         for(int j = 0; j < best->pb->m; j++) {
-            pheroConn[i][j] = 1.;
+            pheroConn[i][j] = 1000.;
         }
     }
 
     // lancer 100 itérations de fourmis
-    for(int it = 0; it < 500; it++) {
+    for(int it = 0; it < 1000; it++) {
 
+        printf("\n\nitération #%d\n", it);
         for(int i = 0; i < nbFourmi; i++) {
 
             resetSolution(&solFourmi[i]);
@@ -99,31 +100,33 @@ void constructionFourmi(Solution* sol, double** pheroConn) {
         if(min > 0) {
             double tirage = aleatoire(min, somme);
             double somme2 = 0;
-            int i = 0, j = 0;
+            int i = 0;
             int trouve = 0;
 
             // recherche du service correspondant au nombre tiré aléatoirement (roulette biaisée)
             while(!trouve && i < sol->pb->m) {
                 if(sol->capaRestantes[i] >= sol->pb->demandes[sol->nbVarClientFixees]) {
-                    if(somme2 + pheroConn[sol->nbVarClientFixees][i] > tirage) {
+                    if(somme2 + pheroConn[sol->nbVarClientFixees][i] >= tirage) {
                         trouve = 1;
                     } else {
                         somme2 += pheroConn[sol->nbVarClientFixees][i];
-                        j = i;
                     }
                 }
-                i ++;
+                if(!trouve) {
+                    i ++;
+                }
+
             }
 
             // connexion au service trouvé dans la solution
-            sol->connexionClient[sol->nbVarClientFixees] = j;
-            sol->z += sol->pb->liaisons[j][sol->nbVarClientFixees];
-            if(sol->services[j] != 1) {
-                if(sol->services[j] == -1) {
+            sol->connexionClient[sol->nbVarClientFixees] = i;
+            sol->z += sol->pb->liaisons[i][sol->nbVarClientFixees];
+            if(sol->services[i] != 1) {
+                if(sol->services[i] == -1) {
                     sol->nbVarServicesFixees ++;
                 }
-                sol->services[j] = 1;
-                sol->z += sol->pb->couts[j];
+                sol->services[i] = 1;
+                sol->z += sol->pb->couts[i];
             }
 
             sol->nbVarClientFixees ++;
@@ -165,9 +168,15 @@ void majPheromones(Solution* best, int nbFourmi, Solution* solFourmi, double** p
                 double ratio = (solFourmi[i].z-moinsBonne)/(meilleure-moinsBonne);
                 // printf("ratio : %lf\n", ratio);
                 if(solFourmi[i].z < bestZ) { // accuentation quand la meilleure solution est dépassée
-                    phero[j][solFourmi[i].connexionClient[j]] *= 1.2;
+                    phero[j][solFourmi[i].connexionClient[j]] += phero[j][solFourmi[i].connexionClient[j]]*0.8*ratio;
                 } else { // diminution autrement
-                    phero[j][solFourmi[i].connexionClient[j]] *= 0.99;
+                    phero[j][solFourmi[i].connexionClient[j]] -= phero[j][solFourmi[i].connexionClient[j]]*0.000004*ratio;
+                }
+
+                // évaporation
+                phero[j][solFourmi[i].connexionClient[j]] -= 2.;
+                if(phero[j][solFourmi[i].connexionClient[j]] < 0) {
+                    phero[j][solFourmi[i].connexionClient[j]] = 0.;
                 }
 
                 // mise à jour de la meilleure solution connue
