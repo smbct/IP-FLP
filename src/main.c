@@ -13,6 +13,7 @@
 #include "solver.h"
 
 #include "aco.h"
+#include "tabu.h"
 
 //------------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
@@ -29,7 +30,8 @@ int main(int argc, char* argv[]) {
 
         creerSolution(&pb, &sol);
 
-        construireACO(&sol);
+        // construireACO(&sol);
+        rechercheTabu(&sol);
 
         // printf("Lancement du branch & bound\n");
         // branchBoundIter(&sol);
@@ -38,7 +40,7 @@ int main(int argc, char* argv[]) {
 
         // construction(&sol);
 
-        afficherSolution(&sol);
+        // afficherSolution(&sol);
         // printf("%lf\n", sol.z);
 
         detruireSolution(&sol);

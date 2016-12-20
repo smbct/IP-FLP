@@ -128,6 +128,7 @@ void construction(Solution* sol) {
                 sol->z += sol->pb->liaisons[serviceMin][clientsTries[serviceMin][indClient]]; // prise en compte du cout de connexion
                 sol->capaRestantes[serviceMin] -= sol->pb->demandes[clientsTries[serviceMin][indClient]];
                 nbClientAffecte ++;
+                sol->nbClientsServices[serviceMin] ++;
             }
             indClient ++;
         }
