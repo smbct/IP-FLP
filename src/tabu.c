@@ -16,9 +16,7 @@ void rechercheTabu(Solution* meilleure) {
     // construction gloutonne
     construction(meilleure);
 
-    printf("solution gloutonne : \n");
-    afficherSolution(meilleure);
-    printf("\n\n");
+    printf("la construction donne z = %lf\n", meilleure->z);
 
     Solution sol;
     creerSolution(meilleure->pb, &sol);
@@ -36,22 +34,22 @@ void rechercheTabu(Solution* meilleure) {
     int longueurTabu = 7;
 
     int nbIt = 0;
-    int nbItMax = 1000;
+    int nbItMax = 15;
 
     while(nbIt < nbItMax) {
 
+
         selectionnerVoisin(&sol, meilleure, tabuListe, nbIt, longueurTabu);
+        // selectionnerVoisin2(&sol, meilleure, tabuListe, nbIt, longueurTabu);
 
         // si la solution actuelle est meilleure que la meilleure trouvée, mise à jour
         if(sol.z < meilleure->z) {
             copierSolution(&sol, meilleure);
-            nbItMax += 1000;
+            nbItMax = nbIt + 50;
         }
 
         nbIt ++;
     }
-
-    afficherSolution(meilleure);
 
     detruireSolution(&sol);
 
@@ -73,19 +71,20 @@ void selectionnerVoisin(Solution* sol, Solution* meilleure, int** tabuListe, int
 
         for(int j = 0; j < sol->pb->m; j++) {
 
-            // vérification que la solution reste admissible
-            if(sol->capaRestantes[j] >= sol->pb->demandes[i]) {
+            // vérification que le service proposé est différent et la solution reste admissible
+            if(j != sol->connexionClient[i] && sol->capaRestantes[j] >= sol->pb->demandes[i]) {
 
                 double z = sol->z;
                 z -= sol->pb->liaisons[sol->connexionClient[i]][i];
                 z += sol->pb->liaisons[j][i];
 
-                if(sol->nbClientsServices[j] == 0) {
+                if(sol->nbClientsServices[j] == 0) { // le service doit être ouvert
                     z += sol->pb->couts[j];
                 }
-                if(sol->nbClientsServices[sol->connexionClient[i]] == 1) {
+                if(sol->nbClientsServices[sol->connexionClient[i]] == 1) { // l'autre service peut être fermé
                     z -= sol->pb->couts[sol->connexionClient[i]];
                 }
+
 
                 if( (clientMin == -1 || z < bestZ) && (tabuListe[i][j] <= it || z < meilleure->z) ) {
                     bestZ = z;
@@ -94,26 +93,24 @@ void selectionnerVoisin(Solution* sol, Solution* meilleure, int** tabuListe, int
                 }
 
             }
-
         }
-
     }
 
+    // printf("meilleur actuel : %lf\n", meilleure->z);
+    // printf("meilleure itération : z = %lf\n", bestZ);
+
     // mise à jour de la solution
-    sol->z -= sol->pb->liaisons[sol->connexionClient[clientMin]][clientMin];
-    sol->z += sol->pb->liaisons[serviceMin][clientMin];
+    sol->z = bestZ;
 
     // mise à jour du nombre de client connectés à chaque service et des services ouverts
     sol->nbClientsServices[sol->connexionClient[clientMin]] --;
     if(sol->nbClientsServices[sol->connexionClient[clientMin]] == 0) {
-        sol->z -= sol->pb->couts[sol->connexionClient[clientMin]];
         sol->services[sol->connexionClient[clientMin]] = 0;
         sol->nbServicesOuverts --;
     }
 
     sol->nbClientsServices[serviceMin] ++;
     if(sol->nbClientsServices[serviceMin] == 1) {
-        sol->z += sol->pb->couts[serviceMin];
         sol->services[serviceMin] = 1;
         sol->nbServicesOuverts ++;
     }
@@ -125,6 +122,66 @@ void selectionnerVoisin(Solution* sol, Solution* meilleure, int** tabuListe, int
 
     // le mouvement devient tabu
     tabuListe[clientMin][serviceMin] = it + longueurTabu;
+
+}
+
+//------------------------------------------------------------------------------
+void selectionnerVoisin2(Solution* sol, Solution* meilleure, int** tabuListe, int it, int longueurTabu) {
+
+    // swap de des services entre deux clients
+
+    // voisinage : modification d'une connexion
+    int clientMin1 = -1;
+    int clientMin2 = -1;
+    double bestZ = sol->z;
+
+    for(int i = 0; i < sol->pb->n; i++) {
+
+        for(int j = i+1; j < sol->pb->n; j++) {
+
+            // vérification que l'échange est utile (services différents)
+            if(sol->connexionClient[j] != sol->connexionClient[i]) {
+
+                // verif solution toujours admissible après échange
+                if(sol->pb->demandes[j]-sol->pb->demandes[i] <= sol->capaRestantes[sol->connexionClient[i]] && sol->pb->demandes[i]-sol->pb->demandes[j] <= sol->capaRestantes[sol->connexionClient[j]]) {
+
+                    double z = sol->z;
+                    z -= sol->pb->liaisons[sol->connexionClient[i]][i];
+                    z += sol->pb->liaisons[sol->connexionClient[j]][i];
+                    z -= sol->pb->liaisons[sol->connexionClient[j]][j];
+                    z += sol->pb->liaisons[sol->connexionClient[i]][j];
+
+
+                    if( (clientMin1 == -1 || z < bestZ) && (tabuListe[i][j] <= it || z < meilleure->z) ) {
+                        bestZ = z;
+                        clientMin1 = i;
+                        clientMin2 = j;
+                    }
+
+
+                }
+            }
+        }
+    }
+
+    if(clientMin1 != -1) {
+
+        // mise à jour de la solution
+        sol->z = bestZ;
+
+        sol->capaRestantes[sol->connexionClient[clientMin1]] += sol->pb->demandes[clientMin2]-sol->pb->demandes[clientMin1];
+        sol->capaRestantes[sol->connexionClient[clientMin2]] += sol->pb->demandes[clientMin1]-sol->pb->demandes[clientMin2];
+
+        int tempService = sol->connexionClient[clientMin1];
+        sol->connexionClient[clientMin1] = sol->connexionClient[clientMin2];
+        sol->connexionClient[clientMin2] = tempService;
+
+        // le mouvement devient tabu
+        tabuListe[clientMin1][sol->connexionClient[clientMin1]] = it + longueurTabu;
+        tabuListe[clientMin2][sol->connexionClient[clientMin2]] = it + longueurTabu;
+
+
+    }
 
 
 }

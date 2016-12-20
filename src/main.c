@@ -30,17 +30,14 @@ int main(int argc, char* argv[]) {
 
         creerSolution(&pb, &sol);
 
-        // construireACO(&sol);
-        rechercheTabu(&sol);
+        printf("Lancement du branch & bound\n");
+        branchBoundIter(&sol);
 
-        // printf("Lancement du branch & bound\n");
-        // branchBoundIter(&sol);
-
-        // printf("Solution optimale : \n");
+        printf("Solution optimale : \n");
 
         // construction(&sol);
 
-        // afficherSolution(&sol);
+        afficherSolution(&sol);
         // printf("%lf\n", sol.z);
 
         detruireSolution(&sol);

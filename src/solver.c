@@ -9,6 +9,8 @@
 #include "solver.h"
 #include "bornes.h"
 
+#include "tabu.h"
+
 //------------------------------------------------------------------------------
 void branchBound(Solution* sol) {
 
@@ -139,11 +141,14 @@ void branchBoundIter(Solution* sol) {
     creerSolution(sol->pb, &duale);
     creerSolution(sol->pb, &best);
 
-    construction(&best);
-    printf("Valeur initiale : %lf\n", best.z);
+    // construction(&best);
 
-    printf("valeur initiale oracle : 8849\n");
-    best.z = 8848.1;
+    printf("Lancement d'une recherche tabou : \n");
+    rechercheTabu(&best);
+    printf("Valeur initiale retrounée par tabou : %lf\n", best.z);
+
+    /*printf("valeur initiale oracle : 8849\n");
+    best.z = 8848.1;*/
 
     printf("\n\nLancement du B&B \n\n");
 

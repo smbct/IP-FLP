@@ -24,4 +24,6 @@ void rechercheTabu(Solution* meilleure);
  */
 void selectionnerVoisin(Solution* sol, Solution* meilleure, int** tabuListe, int it, int longueurTabu);
 
+void selectionnerVoisin2(Solution* sol, Solution* meilleure, int** tabuListe, int it, int longueurTabu);
+
 #endif // TABU_H
