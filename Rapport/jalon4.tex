@@ -41,3 +41,18 @@ Après le passage de chaque fourmi d'une itération les phéromones sont mise à
 Si le passage est un passage appartient à une solution améliorant la solution, alors la trace de phéromone est accentuée.
 Si ce n'est pas le cas, la trace est diminuée. La modification de la trace prend en compte le taux d'amélioration ou de dégradation.
 Il faudrait également que la modification prenne en compte le fait d'ouvrir un service ou non.
+
+\section{Relaxation}
+
+Même avec la solution optimale présente dès le début, on passe trop de temps à arpenter l'arbre.
+Les deux options sont : avoir une meilleure relaxation et changement l'ordre d'affectation des variables.
+
+\subsection{Qualité de la relxation}
+
+Une possibilté est de résoudre le CFLP ou le UFLP. Problème : ça peut être très long. Après, on peut trouver un compromis entre RC et R/U/C/FLP.
+Sinon, il faudrait ajouter des inégalités valides. ça a quand même l'air compliqué dans les papiers >.<
+
+\subsection{Ordre d'affectation}
+
+Ce qui m'embête : peut être uniquement un choix heuristique. Pas facile de déterminer un ordre qui conduit forcément à une résolution plus rapide.
+On peut toujours faire des tests.
