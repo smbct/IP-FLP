@@ -35,6 +35,11 @@ void creerSolution(Probleme* pb, Solution* sol) {
     sol->nbVarClientFixees = 0;
     sol->nbVarServicesFixees = 0;
 
+    sol->nbClientsServices = malloc((long unsigned int)pb->m*sizeof(int));
+    for(int i = 0; i < pb->m; i++) {
+        sol->nbClientsServices[i] = 0;
+    }
+
 }
 
 //------------------------------------------------------------------------------
@@ -55,6 +60,10 @@ void resetSolution(Solution* sol) {
 
     sol->nbServicesOuverts = 0;
     sol->nbClientsConnectes = 0;
+
+    for(int i = 0; i < sol->pb->m; i++) {
+        sol->nbClientsServices[i] = 0;
+    }
 
     sol->z = 0.;
 
@@ -114,6 +123,7 @@ void copierSolution(Solution* sol, Solution* copie) {
     for(int i = 0; i < sol->pb->m; i++) {
         copie->services[i] = sol->services[i];
         copie->capaRestantes[i] = sol->capaRestantes[i];
+        copie->nbClientsServices[i] = sol->nbClientsServices[i];
     }
 
     for(int i = 0; i < sol->pb->n; i++) {
@@ -134,4 +144,6 @@ void detruireSolution(Solution* sol) {
 
     free(sol->services);
     free(sol->connexionClient);
+
+    free(sol->nbClientsServices);
 }
