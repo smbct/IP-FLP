@@ -18,10 +18,18 @@ void construction(Solution* sol);
 /**
  * \brief relaxation continue du problème
  * \param sol la solution contenant le sous problème à résoudre (variables non affectées)
- * \param otpim la solution contenant z, et les valeurs de variables si entières
+ * \param optim la solution contenant z, et les valeurs de variables si entières
  * \return -1 si le problème est impossible, 0 si la solution est non entière et 1 si la solution est entière
  */
 int relaxationContinue(Solution* sol, Solution* optim);
+
+/**
+ * \brief relaxation continue du problème, avec en plus les contraintes y_ij <= x_i
+ * \param sol la solution contenant le sous problème à résoudre (variables non affectées)
+ * \param optim la solution contenant z, et les valeurs de variables si entières
+ * \return -1 si le problème est impossible, 0 si la solution est non entière et 1 si la solution est entière
+ */
+int relaxationContinue2(Solution* sol, Solution* optim);
 
 /**
  * \brief relaxation du problème en résolvant le CFLP

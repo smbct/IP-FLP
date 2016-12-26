@@ -147,8 +147,8 @@ void branchBoundIter(Solution* sol) {
     rechercheTabu(&best);
     printf("Valeur initiale retrounée par tabou : %lf\n", best.z);
 
-    printf("valeur initiale oracle : 8849\n");
-    best.z = 8849;
+    // printf("valeur initiale oracle : 8849\n");
+    // best.z = 8849;
 
     printf("\n\nLancement du B&B \n\n");
 

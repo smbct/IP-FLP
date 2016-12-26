@@ -311,6 +311,186 @@ int relaxationContinue(Solution* sol, Solution* optim) {
 }
 
 //------------------------------------------------------------------------------
+int relaxationContinue2(Solution* sol, Solution* optim) {
+
+    Probleme* pb = sol->pb;
+
+    //désactivation du log de glpk
+    glp_term_out(0);
+
+    glp_prob* prob;
+    prob = glp_create_prob();
+    glp_set_prob_name(prob, "SSCFLP");
+    glp_set_obj_dir(prob, GLP_MIN);
+
+    int nbVar = (pb->n+1)*pb->m;
+    int nbCont = pb->m + pb->n + pb->m*pb->n; // ajout des contraintes y_ij <= x_i
+
+    int nbCreux = pb->m*(pb->n+1) + pb->n*pb->m + 2*pb->n*pb->m; // 2 éléments non nuls par contrainte y_ij <= x_i <=> -x_i + y_ij <= 0
+    int* ia = malloc((long unsigned int)(nbCreux+1)*sizeof(int));
+    int* ja = malloc((long unsigned int)(nbCreux+1)*sizeof(int));
+    double* ar = malloc((long unsigned int)(nbCreux+1)*sizeof(double));
+
+    // déclaration des contraintes et des bornes sur celles-ci
+    glp_add_rows(prob, nbCont);
+    for(int i = 1; i <= pb->m; i++) {
+        glp_set_row_bnds(prob, i, GLP_UP, 0.0, 0.0);
+    }
+    for(int i = 1; i <= pb->n; i++) {
+        glp_set_row_bnds(prob, pb->m+i, GLP_FX, 1.0, 1.0);
+    }
+    for(int i = 1; i <= pb->n*pb->m; i++) {
+        glp_set_row_bnds(prob, pb->m+pb->n+i, GLP_UP, 0.0, 0.0);
+    }
+
+    // variables du problèmes, toutes binaires
+    glp_add_cols(prob, nbVar);
+
+    // variables de connexions service->client
+    for(int i = 0; i < pb->m; i++) {
+        for(int j = 0; j < pb->n; j++) {
+            glp_set_col_kind(prob, i*pb->n+j+1, GLP_CV);
+            if(sol->connexionClient[j] != -1) {
+                if(sol->connexionClient[j] == i) {
+                    glp_set_col_bnds(prob, i*pb->n+j+1, GLP_FX, 1.0, 1.0);
+                } else {
+                    glp_set_col_bnds(prob, i*pb->n+j+1, GLP_FX, 0.0, 0.0);
+                }
+            } else {
+                // les variables qui ont été fixées le sont dans glpk
+                glp_set_col_bnds(prob, i*pb->n+j+1, GLP_DB, 0.0, 1.0);
+            }
+        }
+    }
+
+    // variable d'ouverture des services
+    for(int i = 0; i < pb->m; i++) {
+        // les variables qui ont été fixées le sont dans glpk
+        if(sol->services[i] != -1) {
+            if(sol->services[i]) {
+                glp_set_col_bnds(prob, pb->n*pb->m+i+1, GLP_FX, 1.0, 1.0);
+            } else {
+                glp_set_col_bnds(prob, pb->n*pb->m+i+1, GLP_FX, 0.0, 0.0);
+            }
+        } else {
+            glp_set_col_bnds(prob, pb->n*pb->m+i+1, GLP_DB, 0.0, 1.0);
+        }
+        glp_set_col_kind(prob, pb->n*pb->m+i+1, GLP_CV);
+    }
+
+    // coefficients dans la fonction objectif
+    for(int i = 0; i < pb->m; i++) {
+        for(int j = 0; j < pb->n; j++) {
+            glp_set_obj_coef(prob, i*pb->n+j+1, pb->liaisons[i][j]);
+        }
+        glp_set_obj_coef(prob, pb->m*pb->n+i+1, pb->couts[i]);
+    }
+
+    // initialisation de la matrice creuse des contraintes
+    int indice = 1;
+
+    // pour les m services, la capacité n'est pas dépassée
+    for(int i = 0; i < pb->m; i++) {
+        ia[indice] = i+1;
+        ja[indice] = pb->n*pb->m+i+1; // variable y_i
+        ar[indice] = -pb->capacites[i];
+        indice ++;
+        for(int j = 0; j < pb->n; j++) {
+            ia[indice] = i+1;
+            ja[indice] = i*pb->n+j+1; // variable x_{ij}
+            ar[indice] = pb->demandes[j];
+            indice ++;
+        }
+    }
+
+    // chaque client est connecté à un unique service
+    for(int i = 0; i < pb->n; i++) {
+        for(int j = 0; j < pb->m; j++) {
+            ia[indice] = pb->m+i+1;
+            ja[indice] = j*pb->n+i+1; // variable x_{ji}
+            ar[indice] = 1.0;
+            indice ++;
+        }
+    }
+
+    // les contraintes supplémentaires pour resserer la relaxation : -x_i + y_ij <= 0
+    for(int i = 0; i < pb->m; i++) {
+        for(int j = 0; j < pb->n; j++) {
+
+            ia[indice] = pb->m + pb->n*pb->m + i*pb->n+j +1;
+            ja[indice] = pb->n*pb->m+i+1; // variable y_i
+            ar[indice] = -1.0;
+            indice ++;
+
+            ia[indice] = pb->m + pb->n*pb->m + i*pb->n+j +1;
+            ja[indice] = pb->n*i+j+1; // variable x_ij
+            ar[indice] = 1.0;
+            indice ++;
+        }
+    }
+
+    glp_load_matrix(prob, nbCreux, ia, ja, ar);
+
+    glp_write_lp(prob,NULL,"modele.lp");
+
+    glp_simplex(prob, NULL);
+
+    int res = 0;
+
+    int etat = glp_get_status(prob);
+    if(etat != GLP_NOFEAS) {
+        optim->z = glp_get_obj_val(prob);
+
+        // détermination si la solution est entière
+        int entier = 1;
+        int i = 0, j = 0;
+
+        while(entier && i < pb->m) {
+            j = 0;
+            while(entier && j < pb->n) {
+                double val = glp_get_col_prim(prob, i*pb->n+j+1);
+                double dec = val - floor(val);
+                if(dec > 1e-6) {
+                    entier = 0;
+                } else if(val >= 0.5) { // x_{ij} = 1 => i connecté à j
+                    optim->connexionClient[j] = i;
+                }
+                j ++;
+            }
+            i ++;
+        }
+
+        i = 0;
+        while(entier && i < pb->m) {
+            double val = glp_get_col_prim(prob, pb->m*pb->n+i+1);
+            double dec = val - floor(val);
+            if(dec > 1e-6) {
+                entier = 0;
+            } else {
+                optim->services[i] = (int)floor(0.5+val);
+            }
+            i ++;
+        }
+
+        if(entier) {
+            res = 1;
+        }
+
+    } else {
+        res = -1;
+    }
+
+
+    glp_delete_prob(prob);
+
+    free(ia);
+    free(ja);
+    free(ar);
+
+    return res;
+}
+
+//------------------------------------------------------------------------------
 void relaxationCFLP(Solution* sol) {
 
     Probleme* pb = sol->pb;
