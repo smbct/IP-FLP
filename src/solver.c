@@ -147,8 +147,8 @@ void branchBoundIter(Solution* sol) {
     rechercheTabu(&best);
     printf("Valeur initiale retrounée par tabou : %lf\n", best.z);
 
-    /*printf("valeur initiale oracle : 8849\n");
-    best.z = 8848.1;*/
+    printf("valeur initiale oracle : 8849\n");
+    best.z = 8849;
 
     printf("\n\nLancement du B&B \n\n");
 
@@ -196,16 +196,36 @@ void branchBoundIter(Solution* sol) {
 
                 // ajout d'affectation si nécessaire
                 if(liste.nbService < sol->pb->m) {
+
+
                     sol->services[liste.nbService] = 0;
                     sol->nbVarServicesFixees ++; // le service est affecté à 0, pas besoin de modifier z
                     ajouterService(&liste, liste.nbService);
+
+
                 } else if(liste.nbClient < sol->pb->n) {
-                    sol->connexionClient[liste.nbClient] = 0;
-                    sol->nbVarClientFixees ++;
-                    ajouterClient(&liste, liste.nbClient);
-                    sol->z += sol->pb->liaisons[0][liste.dernierClient->client];
-                    // mise à jour des capacités restantes
-                    sol->capaRestantes[liste.dernierClient->valeur] -= sol->pb->demandes[liste.dernierClient->client];
+
+                    // le service n'est pas forcément ouvert, il faut vérifier
+
+                    // recherche d'un service ouvert et qui peut être connecté au cient
+                    int i = 0;
+                    while( (sol->services[i] != 1 || sol->capaRestantes[i] < sol->pb->demandes[liste.nbClient]) && i < sol->pb->m) {
+                        i ++;
+                    }
+
+                    if(i < sol->pb->m) {
+                        sol->connexionClient[liste.nbClient] = i;
+                        sol->nbVarClientFixees ++;
+                        ajouterClient(&liste, liste.nbClient);
+                        liste.dernierClient->valeur = i;
+                        sol->z += sol->pb->liaisons[i][liste.dernierClient->client];
+                        // mise à jour des capacités restantes
+                        sol->capaRestantes[liste.dernierClient->valeur] -= sol->pb->demandes[liste.dernierClient->client];
+                    } else {
+                        // le client ne peut être affecté à aucun service, il faut backtracker
+                        backtrack(&liste, sol, &best);
+                    }
+
                 } else { // problème fixé, calcul de la solution
 
                     // vérification de la solution
