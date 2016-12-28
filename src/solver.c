@@ -179,7 +179,7 @@ void branchBoundIter(Solution* sol) {
         printf("\n");
 
         // relaxation continue
-        int resRelax = relaxationContinue(sol, &duale);
+        int resRelax = relaxationContinue2(sol, &duale);
 
         /*if(sol->nbVarServicesFixees == sol->pb->m && sol->nbVarClientFixees == sol->pb->n) {
 

@@ -251,7 +251,7 @@ int relaxationContinue(Solution* sol, Solution* optim) {
 
     glp_load_matrix(prob, nbCreux, ia, ja, ar);
 
-    glp_write_lp(prob,NULL,"modele.lp");
+    // glp_write_lp(prob,NULL,"modele.lp");
 
     glp_simplex(prob, NULL);
 
@@ -413,16 +413,20 @@ int relaxationContinue2(Solution* sol, Solution* optim) {
         }
     }
 
+    // printf("nbCont : %d\n\n", nbCont);
+
     // les contraintes supplémentaires pour resserer la relaxation : -x_i + y_ij <= 0
     for(int i = 0; i < pb->m; i++) {
         for(int j = 0; j < pb->n; j++) {
 
-            ia[indice] = pb->m + pb->n*pb->m + i*pb->n+j +1;
+            // printf("ligne : %d\n", pb->m + pb->n*pb->m + i*pb->n+j +1);
+
+            ia[indice] = pb->m + pb->n + i*pb->n+j +1;
             ja[indice] = pb->n*pb->m+i+1; // variable y_i
             ar[indice] = -1.0;
             indice ++;
 
-            ia[indice] = pb->m + pb->n*pb->m + i*pb->n+j +1;
+            ia[indice] = pb->m + pb->n + i*pb->n+j +1;
             ja[indice] = pb->n*i+j+1; // variable x_ij
             ar[indice] = 1.0;
             indice ++;
@@ -431,7 +435,7 @@ int relaxationContinue2(Solution* sol, Solution* optim) {
 
     glp_load_matrix(prob, nbCreux, ia, ja, ar);
 
-    glp_write_lp(prob,NULL,"modele.lp");
+    // glp_write_lp(prob,NULL,"modeleRelax.lp");
 
     glp_simplex(prob, NULL);
 
