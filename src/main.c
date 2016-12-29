@@ -54,14 +54,9 @@ int main(int argc, char* argv[]) {
 //------------------------------------------------------------------------------
 void resoudre(Solution* sol) {
 
-    clock_t begin, end;
-    double temps;
-
     printf("Lancement du branch & bound\n");
 
-    begin = clock();
     branchBoundIter(sol);
-    end = clock();
 
     printf("Solution optimale : \n");
 
@@ -70,7 +65,5 @@ void resoudre(Solution* sol) {
     afficherSolution(sol);
     // printf("%lf\n", sol.z);
 
-    temps = (double)(end-begin) / CLOCKS_PER_SEC;
-    printf("La résolution s'est terminée en %lf secondes\n", temps);
 
 }

@@ -33,9 +33,8 @@ int main(int argc, char* argv[]) {
         resoudre(argv[1], &sol);
         end = clock();
         double temps = (double)(end - begin) / CLOCKS_PER_SEC;
-        temps *= 1000;
 
-        printf(" & %lf\\\\ \n", temps);
+        printf("temps : %lf secondes\n", temps);
 
     } else {
         printf("indiquez une instance en entrée.\n");
@@ -52,8 +51,6 @@ void resoudre(char* instance, Solution* sol) {
 
     creerSolution(&pb, sol);
 
-    printf(" $ %d * %d", pb.m, pb.n);
-
     //désactivation du log de glpk
     glp_term_out(0);
 
@@ -65,7 +62,7 @@ void resoudre(char* instance, Solution* sol) {
     // timer glpk
     glp_iocp param;
     glp_init_iocp(&param);
-    param.tm_lim = 1000*60*2; // valeur en ms
+    param.tm_lim = 1000*60*10; // valeur en ms
     // param.tm_lim = 5000; // valeur en ms
 
     int nbVar = (pb.n+1)*pb.m;
@@ -150,12 +147,6 @@ void resoudre(char* instance, Solution* sol) {
     // lecture des services ouverts
     for(int i = 0; i < pb.m; i++) {
         sol->services[i] = (int)(glp_mip_col_val(prob, pb.m*pb.n+1+i)+0.5);
-    }
-
-    printf(" $ %f", sol->z);
-
-    if(res == GLP_ETMLIM) {
-        printf("*");
     }
 
     afficherSolution(sol);

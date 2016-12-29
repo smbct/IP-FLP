@@ -5,6 +5,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
 #include "solver.h"
 #include "bornes.h"
@@ -137,6 +138,9 @@ void branchBoundRec(Solution* sol, Solution* duale, Solution* best) {
 //------------------------------------------------------------------------------
 void branchBoundIter(Solution* sol) {
 
+    clock_t begin, end;
+    double temps;
+
     Solution duale, best;
     creerSolution(sol->pb, &duale);
     creerSolution(sol->pb, &best);
@@ -145,7 +149,7 @@ void branchBoundIter(Solution* sol) {
 
     printf("Lancement d'une recherche tabou : \n");
     rechercheTabu(&best);
-    printf("Valeur initiale retrounée par tabou : %lf\n", best.z);
+    printf("Valeur initiale retournée par tabou : %lf\n", best.z);
 
     // printf("valeur initiale oracle : 8849\n");
     // best.z = 8849;
@@ -160,9 +164,12 @@ void branchBoundIter(Solution* sol) {
     sol->nbVarServicesFixees ++;
     sol->services[0] = 0;
 
-    while(!listeVide(&liste)) {
+    begin = clock();
+    temps = 0.;
 
-        printf("------------------------DEBUG--------------------------\n");
+    while(!listeVide(&liste) && temps < 600.) {
+
+        /*printf("------------------------DEBUG--------------------------\n");
         printf("nb service affecté : %d\n", liste.nbService);
         printf("nb client affecté : %d\n", liste.nbClient);
         printf("meilleure valeur trouvée : %lf\n", best.z);
@@ -176,7 +183,7 @@ void branchBoundIter(Solution* sol) {
         for(int i = 0; i < sol->pb->n; i++) {
             printf("%d, ", sol->connexionClient[i]);
         }
-        printf("\n");
+        printf("\n");*/
 
         // relaxation continue
         int resRelax = relaxationContinue2(sol, &duale);
@@ -188,7 +195,7 @@ void branchBoundIter(Solution* sol) {
 
         }*/
 
-        printf("Résultat de la relaxation continue : %d, z = %lf\n", resRelax, duale.z);
+        // printf("Résultat de la relaxation continue : %d, z = %lf\n", resRelax, duale.z);
 
         if(resRelax == 0) { // relaxation non entière
 
@@ -241,7 +248,7 @@ void branchBoundIter(Solution* sol) {
 
         } else if(resRelax == 1) { // relaxation entière, vérif et backtrack
 
-            printf("Relaxation continue donne une solution entière : z = %lf\n", duale.z);
+            // printf("Relaxation continue donne une solution entière : z = %lf\n", duale.z);
 
             if(duale.z < best.z) { // une meilleure solution est trouvée, mise à jour
                 copierSolution(&duale, &best);
@@ -251,14 +258,21 @@ void branchBoundIter(Solution* sol) {
 
         } else { // problème impossible
 
-            printf("La relaxation est un problème impossible\n");
+            // printf("La relaxation est un problème impossible\n");
             backtrack(&liste, sol, &best);
 
         }
 
-        printf("----------------------FIN DEBUG------------------------\n\n\n\n");
+        // printf("----------------------FIN DEBUG------------------------\n\n\n\n");
+
+        end = clock();
+        temps = (double)(end-begin) / CLOCKS_PER_SEC;
 
     }
+
+    end = clock();
+    temps = (double)(end-begin) / CLOCKS_PER_SEC;
+    printf("La résolution s'est terminée en %lf secondes\n", temps);
 
     copierSolution(&best, sol);
 
@@ -270,7 +284,7 @@ void branchBoundIter(Solution* sol) {
 //------------------------------------------------------------------------------
 int backtrack(ListeAffectation* liste, Solution* sol, Solution* best) {
 
-    printf("...backtracking\n");
+    // printf("...backtracking\n");
 
     int continuer = 1;
     int vide = 0;
