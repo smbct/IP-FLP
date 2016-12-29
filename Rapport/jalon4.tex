@@ -16,7 +16,7 @@ Cela permet de rapidement savoir si une nouvelle connexion entraîne l'ouverture
 \section{Borne primale}
 
 La borne primale proposée dans le projet est l'algorithme de construction.
-Comme vu dans le jalon 3, elle donne cependant des résultats assez éloigné.
+Comme vu dans le jalon 3, elle donne cependant des résultats assez éloignés.
 Pour augmenter les chances de couper dans l'arbre de résolution, une métaheuristique de type tabou a été implémentée.
 Cependant, elle n'a pas été finement réglée. Elle permet d'obtenir tout de même de meilleures solutions que l'algorithme glouton. \newline
 
@@ -59,8 +59,9 @@ La capacité restante des services, qui est maintenue à jour, permet de conclur
 
 \section{Résultats}
 
-Voici les résultats obtenus à parti des choix explicités.
+Voici les résultats obtenus à partir des choix explicités.
 Pour chaque instance, le temps de résolution est indiqué avec glpk, le branch and bound avec la relaxation continue originale et enfin le branch and bound avec la relaxation continue avec les contraintes additionnelles.
+Lorsque le temps maximum est atteint (600 s), la meilleure solution obtenue est indiquée entre parenthèses.
 
 \begin{align*}
 \begin{tabular}{|c|c|c|c|c|}
