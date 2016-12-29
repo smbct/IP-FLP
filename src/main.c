@@ -31,17 +31,6 @@ int main(int argc, char* argv[]) {
 
         resoudre(&sol);
 
-        /*Solution temp;
-        creerSolution(&pb, &temp);
-
-        // relaxation continue
-        relaxationContinue(&sol, &temp);
-        printf("Relaxation continue 1 : %lf\n", temp.z);
-
-        // relaxation continue 2
-        relaxationContinue2(&sol, &temp);
-        printf("Relaxation continue 2 : %lf\n", temp.z);*/
-
         detruireSolution(&sol);
 
         detruireProbleme(&pb);
@@ -60,10 +49,6 @@ void resoudre(Solution* sol) {
 
     printf("Solution optimale : \n");
 
-    // construction(&sol);
-
     afficherSolution(sol);
-    // printf("%lf\n", sol.z);
-
 
 }
