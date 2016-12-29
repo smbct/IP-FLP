@@ -16,7 +16,7 @@ void rechercheTabu(Solution* meilleure) {
     // construction gloutonne
     construction(meilleure);
 
-    printf("la construction donne z = %lf\n", meilleure->z);
+    // printf("la construction donne z = %lf\n", meilleure->z);
 
     Solution sol;
     creerSolution(meilleure->pb, &sol);
