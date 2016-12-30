@@ -151,8 +151,8 @@ void branchBoundIter(Solution* sol) {
     rechercheTabu(&best);
     printf("Valeur initiale retournée par tabou : %lf\n", best.z);
 
-    // printf("valeur initiale oracle : 8849\n");
-    // best.z = 8849;
+    // printf("valeur initiale oracle : 9881.5\n");
+    // best.z = 9881.5;
 
     printf("\n\nLancement du B&B \n\n");
 
@@ -169,7 +169,7 @@ void branchBoundIter(Solution* sol) {
 
     while(!listeVide(&liste) && temps < 600.) {
 
-        /*printf("------------------------DEBUG--------------------------\n");
+        printf("------------------------DEBUG--------------------------\n");
         printf("nb service affecté : %d\n", liste.nbService);
         printf("nb client affecté : %d\n", liste.nbClient);
         printf("meilleure valeur trouvée : %lf\n", best.z);
@@ -183,19 +183,19 @@ void branchBoundIter(Solution* sol) {
         for(int i = 0; i < sol->pb->n; i++) {
             printf("%d, ", sol->connexionClient[i]);
         }
-        printf("\n");*/
+        printf("\n");
 
         // relaxation continue
         int resRelax = relaxationContinue2(sol, &duale);
 
-        /*if(sol->nbVarServicesFixees == sol->pb->m && sol->nbVarClientFixees == sol->pb->n) {
+        if(sol->nbVarServicesFixees == sol->pb->m && sol->nbVarClientFixees == sol->pb->n) {
 
             printf("problème fixé\n");
             printf("res relaxation : %d\n", resRelax);
 
-        }*/
+        }
 
-        // printf("Résultat de la relaxation continue : %d, z = %lf\n", resRelax, duale.z);
+        printf("Résultat de la relaxation continue : %d, z = %lf\n", resRelax, duale.z);
 
         if(resRelax == 0) { // relaxation non entière
 
@@ -263,7 +263,7 @@ void branchBoundIter(Solution* sol) {
 
         }
 
-        // printf("----------------------FIN DEBUG------------------------\n\n\n\n");
+        printf("----------------------FIN DEBUG------------------------\n\n\n\n");
 
         end = clock();
         temps = (double)(end-begin) / CLOCKS_PER_SEC;
@@ -284,7 +284,7 @@ void branchBoundIter(Solution* sol) {
 //------------------------------------------------------------------------------
 int backtrack(ListeAffectation* liste, Solution* sol, Solution* best) {
 
-    // printf("...backtracking\n");
+    printf("...backtracking\n");
 
     int continuer = 1;
     int vide = 0;
