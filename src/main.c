@@ -6,12 +6,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 #include "probleme.h"
 #include "solution.h"
 #include "bornes.h"
 #include "solver.h"
-
 #include "aco.h"
 #include "tabu.h"
 
@@ -20,7 +20,7 @@ void resoudre(Solution* sol, int localsearch, int tabuListLenght, clock_t tmax, 
 //------------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
     //parametres d'appel
-        char * fileName; //nom du fichier d'instance
+        char * instanceFile; //nom du fichier d'instance
 
 
         int localsearch; //code de la recherche locale (0 -> sans, 1->descente, 2->PPD, 3->tabou)
@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
 
     creerSolution(&pb, &sol);
 
-    resoudreresoudre(&sol, localsearch, tabuListLenght, tmax, alpha, beta, rho, pheromone_init, n_ants, pheremononeUpdateScheme, nb_elit, nu);
+    resoudre(&sol, localsearch, tabuListLenght, tmax, alpha, beta, rho, pheromone_init, n_ants, pheremononeUpdateScheme, nb_elit, nu);
 
     detruireSolution(&sol);
 

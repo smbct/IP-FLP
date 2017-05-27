@@ -4,6 +4,7 @@
  */
 
 #include "aco.h"
+#include "tri.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -16,7 +17,7 @@ void construireACO(Solution* best, int localsearch, int tabuListLenght, long tma
         long tstart = clock(); //pour le critère d'arret
         int n = best->pb->n; //nombre de client
         int m = best->pb->m; //nombre de service
-        int i,j, tmp, val; //compteur de boucle et variable de traitement
+        int i,j, tmp; //compteur de boucle et variable de traitement
         double ** pheromone; //matrice des pheromones
         double ** heuristic; //matrice de l'information heuristique
         double ** probability; //information combine des pheromones et de l'heuristique
@@ -34,7 +35,7 @@ void construireACO(Solution* best, int localsearch, int tabuListLenght, long tma
                 heuristic[i] = malloc((long unsigned int)m*sizeof(double));
                 probability[i] = malloc((long unsigned int)m*sizeof(double));
 
-                for (j = 0, j<m; ++i) {
+                for (j = 0; j<m; ++i) {
                     //valeur initiale des pheromones
                     pheromone[i][j] = pheromone_init;
 
@@ -44,7 +45,7 @@ void construireACO(Solution* best, int localsearch, int tabuListLenght, long tma
             }
 
             //calcul des probas
-            calculProba(pheromone, heuristic, probability, n, m, alpha, beta)
+            calculProba(pheromone, heuristic, probability, n, m, alpha, beta);
 
             //population initiale
             Solution* solFourmi = malloc((long unsigned int)n_ants*sizeof(Solution));
@@ -53,36 +54,37 @@ void construireACO(Solution* best, int localsearch, int tabuListLenght, long tma
             }
 
             //initialisation du best
-            val = solFourmi[0]->z; tmp = 0;
+            tmp = 0;
             for (i = 1; i<n_ants; ++i) {
-                if (solFourmi[i]->z < val) {
-                    val = solFourmi[i]->z;
-                    tmp = i
-                }
+                if (solFourmi[i].z < solFourmi[tmp].z) { tmp = i; }
             }
             copierSolution(&solFourmi[tmp], best);
-
-        }
 
         //recherche
         while (clock() - tstart < tmax*CLOCKS_PER_SEC) {
             //mise a jour des pheromones
-            majPheromones(best, n_ants, solFourmi, pheromone, rho, pheremononeUpdateScheme, nb_elit, nu);
+            majPheromones(best, n_ants, solFourmi, pheromone, n_ants, rho, pheremononeUpdateScheme, nb_elit, nu);
 
             //mise a jour des probabilite
-            calculProba( pheromone, heuristic, probability, n, m, alpha, beta)
+            calculProba( pheromone, heuristic, probability, n, m, alpha, beta);
 
             //nouvelle population
             for (i = 0; i<n_ants; ++i) {
                 constructionFourmi(&solFourmi[i], probability);   
             }
+
+            //mise a jour du best
+            tmp = -1;
+            for (i = 0; i<n_ants; ++i) {
+                if (solFourmi[i].z < best->z) { tmp = i; }
+            }
+            if (tmp >= 0) {copierSolution(&solFourmi[tmp], best);}
         }
     //fin
-    return best;
 }
 
 //------------------------------------------------------------------------------
-void constructionFourmi(Solution* sol, double** probability) {
+void constructionFourmi(Solution* sol, double** probability) { //TODO la recherche locale
     //variables
         int continuer = 1;
         double somme, somme2; //pour la roulette biaise
@@ -102,9 +104,9 @@ void constructionFourmi(Solution* sol, double** probability) {
 
         for(i = 0; i < sol->pb->m; i++) {
             if(sol->capaRestantes[i] >= sol->pb->demandes[sol->nbVarClientFixees]) {
-                somme += pheroConn[sol->nbVarClientFixees][i];
-                if(min < 0 || min > pheroConn[sol->nbVarClientFixees][i]) {
-                    min = pheroConn[sol->nbVarClientFixees][i];
+                somme += probability[sol->nbVarClientFixees][i];
+                if(min < 0 || min > probability[sol->nbVarClientFixees][i]) {
+                    min = probability[sol->nbVarClientFixees][i];
                 }
             }
         }
@@ -118,10 +120,10 @@ void constructionFourmi(Solution* sol, double** probability) {
             // recherche du service correspondant au nombre tiré aléatoirement (roulette biaisée)
             while(!trouve && i < sol->pb->m) {
                 if(sol->capaRestantes[i] >= sol->pb->demandes[sol->nbVarClientFixees]) {
-                    if(somme2 + pheroConn[sol->nbVarClientFixees][i] >= tirage) {
+                    if(somme2 + probability[sol->nbVarClientFixees][i] >= tirage) {
                         trouve = 1;
                     } else {
-                        somme2 += pheroConn[sol->nbVarClientFixees][i];
+                        somme2 += probability[sol->nbVarClientFixees][i];
                     }
                 }
                 if(!trouve) {
@@ -155,20 +157,66 @@ void constructionFourmi(Solution* sol, double** probability) {
 }
 
 //------------------------------------------------------------------------------
-void majPheromones(Solution* best, int nbFourmi, Solution* solFourmi, double** phero, double rho, int pheremononeUpdateScheme, int nb_elit, double nu) {
+void majPheromones(Solution* best, int nbFourmi, Solution* solFourmi, double** pheromone, int n_ants, double rho, int pheremononeUpdateScheme, int nb_elit, double nu) {
+    int i,j; //compteurs de boucle
+    int n = best->pb->n;
+    int m = best->pb->m;
+
+    //evaporation (commun à tous)
+    for(i = 0; i<n; ++i) {
+        for(j = 0; i<m; ++j) {
+            pheromone[i][j] *= rho;
+        }
+    }
+
     if (0 == pheremononeUpdateScheme) { //ACO
-
+        //toutes les fourmies ajoutent de manière identiques
+        for(i = 0; i<n_ants; ++i) {
+            for(j = 0; j<n; ++j) {
+                pheromone[j][solFourmi[i].connexionClient[j]] += 1.0 / solFourmi[i].z;
+            }
+        }
     } else if(1 == pheremononeUpdateScheme) { //EAS
-
+        //tri des solutions
+        int * indices = malloc((long unsigned int)n_ants*sizeof(int));
+        double * val = malloc((long unsigned int)n_ants*sizeof(double));
+        for(i = 0; i<n_ants; ++i) {
+            indices[i] = i;
+            val[i] = solFourmi[i].z;
+        }
+        trierCroissant(n_ants, indices, val, val);
+        
+        //seul les meilleurs ajoutent
+        for (i = 0; i<nb_elit; ++i) {
+            for(j = 0; j<n; ++j) {
+                pheromone[j][solFourmi[indices[i]].connexionClient[j]] += 1.0 / solFourmi[indices[i]].z;
+            }
+        }
     } else/* if(2 == pheremononeUpdateScheme) */{ //rank base
+        //tri des solutions
+        int * indices = malloc((long unsigned int)n_ants*sizeof(int));
+        double * val = malloc((long unsigned int)n_ants*sizeof(double));
+        for(i = 0; i<n_ants; ++i) {
+            indices[i] = i;
+            val[i] = solFourmi[i].z;
+        }
+        trierCroissant(n_ants, indices, val, val);
 
+        //ajout avec decroissance
+        double acc = 1.0;
+        for (i = 0; i<nb_elit; ++i) {
+            for(j = 0; j<n; ++j) {
+                pheromone[j][solFourmi[indices[i]].connexionClient[j]] += acc / solFourmi[indices[i]].z;
+            }
+            acc *= nu;
+        }
     }
 
 }
 
 void calculProba(double ** pheromone, double ** heuristic, double ** probability, int n, int m, double alpha, double beta) {
-    for (int i = 0, i<n; ++i) {
-        for (int j = 0, i<m; ++j) {
+    for (int i = 0; i<n; ++i) {
+        for (int j = 0; i<m; ++j) {
             probability[i][j] = pow(pheromone[i][j], alpha) + pow(heuristic[i][j], beta); //non normalisé car cela dependra de l'avancement de la construction
         }
     }
