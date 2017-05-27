@@ -5,90 +5,102 @@
 
 #include "aco.h"
 
-#include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
+#include <math.h>
 
 //------------------------------------------------------------------------------
-void construireACO(Solution* best) {
+void construireACO(Solution* best, int localsearch, int tabuListLenght, long tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu) {
+    //variable
+        long tstart = clock(); //pour le critère d'arret
+        int n = best->pb->n; //nombre de client
+        int m = best->pb->m; //nombre de service
+        int i,j, tmp, val; //compteur de boucle et variable de traitement
+        double ** pheromone; //matrice des pheromones
+        double ** heuristic; //matrice de l'information heuristique
+        double ** probability; //information combine des pheromones et de l'heuristique
 
-    best->z = -1.;
+    //début
+        //initialisation
+            srand((unsigned int)time(NULL)); // initialisation du générateur aléatoire
 
-    // initialisation du générateur aléatoire
-    srand((unsigned int)time(NULL));
+            // initialisation des matrices
+            pheromone = malloc((long unsigned int)n*sizeof(double*));
+            heuristic = malloc((long unsigned int)n*sizeof(double*));
+            probability = malloc((long unsigned int)n*sizeof(double*));
+            for(i = 0; i < n; ++i) {
+                pheromone[i] = malloc((long unsigned int)m*sizeof(double));
+                heuristic[i] = malloc((long unsigned int)m*sizeof(double));
+                probability[i] = malloc((long unsigned int)m*sizeof(double));
 
-    int nbFourmi = 50;
-    Solution* solFourmi = malloc((long unsigned int)nbFourmi*sizeof(Solution));
-    for(int i = 0; i < nbFourmi; i++) {
-        creerSolution(best->pb, &solFourmi[i]);
+                for (j = 0, j<m; ++i) {
+                    //valeur initiale des pheromones
+                    pheromone[i][j] = pheromone_init;
 
-    }
+                    //calcul de la valeur heuristique
+                    heuristic[i][j] = 1.0 / best->pb->liaisons[i][j];
+                }
+            }
 
-    // phéromones des connexions clients*services
-    double** pheroConn = malloc((long unsigned int)best->pb->n*sizeof(double*));
-    for(int i = 0; i < best->pb->n; i++) {
-        pheroConn[i] = malloc((long unsigned int)best->pb->m*sizeof(double));
-    }
+            //calcul des probas
+            calculProba(pheromone, heuristic, probability, n, m, alpha, beta)
 
-    // initialisation des phéromones, de manière équilibrée
-    for(int i = 0; i < best->pb->n; i++) {
-        for(int j = 0; j < best->pb->m; j++) {
-            pheroConn[i][j] = 1000.;
+            //population initiale
+            Solution* solFourmi = malloc((long unsigned int)n_ants*sizeof(Solution));
+            for(i = 0; i < n_ants; ++i) {
+                constructionFourmi(&solFourmi[i], probability);
+            }
+
+            //initialisation du best
+            val = solFourmi[0]->z; tmp = 0;
+            for (i = 1; i<n_ants; ++i) {
+                if (solFourmi[i]->z < val) {
+                    val = solFourmi[i]->z;
+                    tmp = i
+                }
+            }
+            copierSolution(&solFourmi[tmp], best);
+
         }
-    }
 
-    // lancer 100 itérations de fourmis
-    for(int it = 0; it < 1000; it++) {
+        //recherche
+        while (clock() - tstart < tmax*CLOCKS_PER_SEC) {
+            //mise a jour des pheromones
+            majPheromones(best, n_ants, solFourmi, pheromone, rho, pheremononeUpdateScheme, nb_elit, nu);
 
-        printf("\n\nitération #%d\n", it);
-        for(int i = 0; i < nbFourmi; i++) {
+            //mise a jour des probabilite
+            calculProba( pheromone, heuristic, probability, n, m, alpha, beta)
 
-            resetSolution(&solFourmi[i]);
-            constructionFourmi(&solFourmi[i], pheroConn);
-
+            //nouvelle population
+            for (i = 0; i<n_ants; ++i) {
+                constructionFourmi(&solFourmi[i], probability);   
+            }
         }
-
-        majPheromones(best, nbFourmi, solFourmi, pheroConn);
-
-    }
-
-    printf("phéromones à la fin : \n");
-    for(int i = 0; i < best->pb->n; i++) {
-        printf("client %d : ", i);
-        for(int j = 0; j < best->pb->m; j++) {
-            printf("%lf, ", pheroConn[i][j]);
-        }
-        printf("\n");
-    }
-
-
-    printf("construction d'une solution par une fourmi : z = %lf\n", best->z);
-
-    for(int i = 0; i < best->pb->n; i++) {
-        free(pheroConn[i]);
-    }
-    free(pheroConn);
-
-    for(int i = 0; i < nbFourmi; i++) {
-        detruireSolution(&solFourmi[i]);
-    }
-    free(solFourmi);
+    //fin
+    return best;
 }
 
 //------------------------------------------------------------------------------
-void constructionFourmi(Solution* sol, double** pheroConn) {
+void constructionFourmi(Solution* sol, double** probability) {
+    //variables
+        int continuer = 1;
+        double somme, somme2; //pour la roulette biaise
+        double min; //valeur de la probabilité minimale
+        double tirage; //valeur aléaoire uniformement distribué
+        int i; //compteur de boucle
+        int trouve; //si on a trouve notre facilite
 
-    int continuer = 1;
-
+    //debut
     while(continuer) {
 
         // sélection d'une connexion pour le premier client non affecté
         // roulette biaisée pour sélectionner le service auquel l'affecter
 
-        double somme = 0;
-        double min = -1.;
+        somme = 0;
+        min = -1.;
 
-        for(int i = 0; i < sol->pb->m; i++) {
+        for(i = 0; i < sol->pb->m; i++) {
             if(sol->capaRestantes[i] >= sol->pb->demandes[sol->nbVarClientFixees]) {
                 somme += pheroConn[sol->nbVarClientFixees][i];
                 if(min < 0 || min > pheroConn[sol->nbVarClientFixees][i]) {
@@ -98,10 +110,10 @@ void constructionFourmi(Solution* sol, double** pheroConn) {
         }
 
         if(min > 0) {
-            double tirage = aleatoire(min, somme);
-            double somme2 = 0;
-            int i = 0;
-            int trouve = 0;
+            tirage = aleatoire(min, somme);
+            somme2 = 0;
+            i = 0;
+            trouve = 0;
 
             // recherche du service correspondant au nombre tiré aléatoirement (roulette biaisée)
             while(!trouve && i < sol->pb->m) {
@@ -140,57 +152,26 @@ void constructionFourmi(Solution* sol, double** pheroConn) {
         }
 
     }
-
 }
 
 //------------------------------------------------------------------------------
-void majPheromones(Solution* best, int nbFourmi, Solution* solFourmi, double** phero) {
+void majPheromones(Solution* best, int nbFourmi, Solution* solFourmi, double** phero, double rho, int pheremononeUpdateScheme, int nb_elit, double nu) {
+    if (0 == pheremononeUpdateScheme) { //ACO
 
-    double meilleure = -1.;
-    double moinsBonne = -1.;
+    } else if(1 == pheremononeUpdateScheme) { //EAS
 
-    double bestZ = best->z;
-
-    for(int i = 0; i < nbFourmi; i++) {
-        if( (meilleure < 0 || solFourmi[i].z < meilleure) && solFourmi[i].z > 0) {
-            meilleure = solFourmi[i].z;
-        }
-        if( (moinsBonne < 0 || solFourmi[i].z > moinsBonne) && solFourmi[i].z > 0) {
-            moinsBonne = solFourmi[i].z;
-        }
-    }
-
-    for(int i = 0; i < nbFourmi; i++) {
-        for(int j = 0; j < solFourmi[i].pb->n; j++) {
-
-            if(solFourmi[i].z > 0) {
-
-                double ratio = (solFourmi[i].z-moinsBonne)/(meilleure-moinsBonne);
-                // printf("ratio : %lf\n", ratio);
-                if(solFourmi[i].z < bestZ) { // accuentation quand la meilleure solution est dépassée
-                    phero[j][solFourmi[i].connexionClient[j]] += phero[j][solFourmi[i].connexionClient[j]]*0.8*ratio;
-                } else { // diminution autrement
-                    phero[j][solFourmi[i].connexionClient[j]] -= phero[j][solFourmi[i].connexionClient[j]]*0.000004*ratio;
-                }
-
-                // évaporation
-                phero[j][solFourmi[i].connexionClient[j]] -= 2.;
-                if(phero[j][solFourmi[i].connexionClient[j]] < 0) {
-                    phero[j][solFourmi[i].connexionClient[j]] = 0.;
-                }
-
-                // mise à jour de la meilleure solution connue
-                if(best->z < 0 || solFourmi[i].z < best->z) {
-                    copierSolution(&solFourmi[i], best);
-                    printf("amélioration : z = %lf\n", best->z);
-                }
-
-            }
-
-        }
+    } else/* if(2 == pheremononeUpdateScheme) */{ //rank base
 
     }
 
+}
+
+void calculProba(double ** pheromone, double ** heuristic, double ** probability, int n, int m, double alpha, double beta) {
+    for (int i = 0, i<n; ++i) {
+        for (int j = 0, i<m; ++j) {
+            probability[i][j] = pow(pheromone[i][j], alpha) + pow(heuristic[i][j], beta); //non normalisé car cela dependra de l'avancement de la construction
+        }
+    }
 }
 
 //------------------------------------------------------------------------------
