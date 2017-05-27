@@ -15,33 +15,99 @@
 #include "aco.h"
 #include "tabu.h"
 
-void resoudre(Solution* sol);
+void resoudre(Solution* sol, int localsearch, int tabuListLenght, clock_t tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu);
 
 //------------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
+    //parametres d'appel
+        char * fileName; //nom du fichier d'instance
 
-    if(argc > 1) {
-        Probleme pb;
 
-        chargerProbleme(&pb, argv[1]);
+        int localsearch; //code de la recherche locale (0 -> sans, 1->descente, 2->PPD, 3->tabou)
+        int tabuListLenght; //si localsearch == 3 taille de la liste tabou
+        long tmax; //budget de temps de calcul
+        double alpha; //puissance des pheromones
+        double beta; //puissance de l'information heuristique
+        double rho; //coeficient d'evaporation
+        double pheromone_init; //valeur initiale des pheromones
+        int n_ants; //nombre de fourmis de la population
+        int pheremononeUpdateScheme; //methode de gestion des pheromones : 0->ACO, 1->EAS, 2->rank base AS
+        int nb_elit; //si EAS nombre de solution elite
+        double nu; //si rank base facteur de reduction en fonction du rang
 
-        Solution sol;
 
-        creerSolution(&pb, &sol);
-
-        resoudre(&sol);
-
-        detruireSolution(&sol);
-
-        detruireProbleme(&pb);
+    //reading all parameter
+    if (argc <= 1) {
+        printf("Pas d'arguments\n");
+        return 0;
+    }
+    for(int i=1; i< argc ; i++){
+        if(strcmp(argv[i], "--localsearch") == 0){
+            localsearch = atoi(argv[i+1]);
+            i++;
+        } else if(strcmp(argv[i], "--tabuListLenght") == 0){
+            tabuListLenght = atoi(argv[i+1]);
+            i++;
+        } else if(strcmp(argv[i], "--tmax") == 0) {
+            tmax = atol(argv[i+1]);
+            i++;
+        } else if(strcmp(argv[i], "--alpha") == 0){
+            alpha = atof(argv[i+1]);
+            i++;
+        } else if(strcmp(argv[i], "--beta") == 0){
+            beta = atof(argv[i+1]);
+            i++;
+        } else if(strcmp(argv[i], "--rho") == 0){
+            rho = atof(argv[i+1]);
+            i++;
+        } else if(strcmp(argv[i], "--pheromone_init") == 0){
+            pheromone_init = atof(argv[i+1]);
+            i++;
+        } else if(strcmp(argv[i], "--n_ants") == 0){
+            n_ants = atoi(argv[i+1]);
+            i++;
+        } else if(strcmp(argv[i], "--pheremononeUpdateScheme") == 0){
+            pheremononeUpdateScheme = atoi(argv[i+1]);
+            i++;
+        } else if(strcmp(argv[i], "--nb_elit") == 0){
+            nb_elit = atoi(argv[i+1]);
+            i++;
+        } else if(strcmp(argv[i], "--nu") == 0){
+            nu = atof(argv[i+1]);
+            i++;
+        } else if(strcmp(argv[i], "--instance") == 0) {
+            instanceFile = argv[i+1];
+            i++;
+        }
     }
 
+    //debut
+    Probleme pb;
 
+    chargerProbleme(&pb, instanceFile);
+
+    Solution sol;
+
+    creerSolution(&pb, &sol);
+
+    resoudreresoudre(&sol, localsearch, tabuListLenght, tmax, alpha, beta, rho, pheromone_init, n_ants, pheremononeUpdateScheme, nb_elit, nu);
+
+    detruireSolution(&sol);
+
+    detruireProbleme(&pb);
+
+    //fin
     return 0;
 }
 
 //------------------------------------------------------------------------------
-void resoudre(Solution* sol) {
+void resoudre(Solution* sol, int localsearch, int tabuListLenght, clock_t tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu) {
+
+    printf("Lancement de l'ACO\n");
+
+    construireACO(sol, localsearch, tabuListLenght, tmax, alpha, beta, rho, pheromone_init, n_ants, pheremononeUpdateScheme, nb_elit, nu);
+
+    afficherSolution(sol);    
 
     printf("Lancement du branch & bound\n");
 
