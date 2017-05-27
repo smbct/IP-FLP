@@ -38,13 +38,14 @@ void constructionFourmi(Solution* sol, double** probability);
  * \param[in,out] best la meilleure solution connue, mise a jour
  * \param[in] nbFourmi le nombre de fourmi de la colonie
  * \param[in] solFourmi les solutions créées
- * \param[in,out] phero les traces actuelles
+ * \param[in,out] pheromone les traces actuelles
+ * \param[in] n_ants nombre de fourmis dans la population
  * \param[in] rho coeficient d'evaporation
  * \param[in] pheremononeUpdateScheme methode de gestion des pheromones : 0->ACO, 1->EAS, 2->rank base AS
  * \param[in] nb_elit si EAS nombre de solution elite
  * \param[in] nu si rank base facteur de reduction en fonction du rang
  */
-void majPheromones(Solution* best, int nbFourmi, Solution* solFourmi, double** phero, double rho, int pheremononeUpdateScheme, int nb_elit, double nu);
+void majPheromones(Solution* best, int nbFourmi, Solution* solFourmi, double** pheromone, int n_ants, double rho, int pheremononeUpdateScheme, int nb_elit, double nu);
 
 /**
  * \brief calcule les probabilité d'utiliser chaque association service/client
@@ -56,7 +57,7 @@ void majPheromones(Solution* best, int nbFourmi, Solution* solFourmi, double** p
  * \param[in] alpha puissance des pheromones
  * \param[in] beta puissance de l'information heuristique
  */
-void calculProba(double ** pheromone, double ** heuristic, double ** probability, int n, int m, double alpha, double beta)
+void calculProba(double ** pheromone, double ** heuristic, double ** probability, int n, int m, double alpha, double beta);
 
 /*
  * \brief retourne un nombre aléatoire entre min et max
