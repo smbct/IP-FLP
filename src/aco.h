@@ -36,16 +36,15 @@ void constructionFourmi(Solution* sol, double** probability);
 /**
  * \brief mise à jour des traces présentes sur chaque choix pour les variables
  * \param[in,out] best la meilleure solution connue, mise a jour
- * \param[in] nbFourmi le nombre de fourmi de la colonie
+ * \param[in] n_ants le nombre de fourmi de la colonie
  * \param[in] solFourmi les solutions créées
  * \param[in,out] pheromone les traces actuelles
- * \param[in] n_ants nombre de fourmis dans la population
  * \param[in] rho coeficient d'evaporation
  * \param[in] pheremononeUpdateScheme methode de gestion des pheromones : 0->ACO, 1->EAS, 2->rank base AS
  * \param[in] nb_elit si EAS nombre de solution elite
  * \param[in] nu si rank base facteur de reduction en fonction du rang
  */
-void majPheromones(Solution* best, int nbFourmi, Solution* solFourmi, double** pheromone, int n_ants, double rho, int pheremononeUpdateScheme, int nb_elit, double nu);
+void majPheromones(Solution* best, int n_ants, Solution* solFourmi, double** pheromone, double rho, int pheremononeUpdateScheme, int nb_elit, double nu);
 
 /**
  * \brief calcule les probabilité d'utiliser chaque association service/client
