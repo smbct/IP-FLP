@@ -16,16 +16,16 @@
 #include "tabu.h"
 #include "rechercheLocale.h"
 
-void resoudre(Solution* sol, int localsearch, int tabuListLenght, clock_t tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu, double bestval, unsigned int seed);
+void resoudre(Solution* sol, int localsearch, int tabuListLenght, long tmaxtabu, clock_t tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu, double bestval, unsigned int seed);
 
 //------------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
     //parametres d'appel
         char * instanceFile; //nom du fichier d'instance
 
-
         int localsearch; //code de la recherche locale (0 -> sans, 1->descente, 2->PPD, 3->tabou)
         int tabuListLenght; //si localsearch == 3 taille de la liste tabou
+        long tmaxtabu; //temps de recherche maximale de la recherche tabou
         long tmax; //budget de temps de calcul
         double alpha; //puissance des pheromones
         double beta; //puissance de l'information heuristique
@@ -51,6 +51,9 @@ int main(int argc, char* argv[]) {
             i++;
         } else if(strcmp(argv[i], "--tabuListLenght") == 0){
             tabuListLenght = atoi(argv[i+1]);
+            i++;
+        } else if(strcmp(argv[i], "--tmaxtabu") == 0) {
+            tmaxtabu = atol(argv[i+1]);
             i++;
         } else if(strcmp(argv[i], "--tmax") == 0) {
             tmax = atol(argv[i+1]);
@@ -101,7 +104,7 @@ int main(int argc, char* argv[]) {
 
     creerSolution(&pb, &sol);
 
-    resoudre(&sol, localsearch, tabuListLenght, tmax, alpha, beta, rho, pheromone_init, n_ants, pheremononeUpdateScheme, nb_elit, nu, bestval, seed);
+    resoudre(&sol, localsearch, tabuListLenght, tmaxtabu, tmax, alpha, beta, rho, pheromone_init, n_ants, pheremononeUpdateScheme, nb_elit, nu, bestval, seed);
 
     detruireSolution(&sol);
 
@@ -112,7 +115,7 @@ int main(int argc, char* argv[]) {
 }
 
 //------------------------------------------------------------------------------
-void resoudre(Solution* sol, int localsearch, int tabuListLenght, clock_t tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu, double bestval, unsigned int seed) {
+void resoudre(Solution* sol, int localsearch, int tabuListLenght, long tmaxtabu, clock_t tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu, double bestval, unsigned int seed) {
 
     //printf("Lancement de l'ACO\n");
 

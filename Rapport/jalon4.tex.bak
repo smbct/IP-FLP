@@ -1,0 +1,94 @@
+\section{Introduction}
+
+Dans cette partie, un branch and bound est mis en oeuvre pour résoudre le problème de SSCFLP.
+Il fait appel à glpk pour la relaxation continue.
+
+\section{Modélisation utilisée}
+
+L'algorithme de résolution général vu en cours s'adapte naturellement à n'importe quel problème d'optimisation linéaire.
+Cependant, il n'est pas nécessaire de reprendre strictement la modélisation utilisée dans glpk.
+Les variables de connexions entre les clients et les services ont été remplacées dans le programme par une unique variable par client qui indique à quel service il est connecté. Cela évite d'avoir à affecter les autres variables de connexions à 0 une fois qu'une d'entre elle est affectée à 1. \newline
+
+Cette représentation mémoire d'une solution permet de respecter les contraintes de single source sans vérification.
+Certaines informations comme le nombre de client connectés à un service sont également tenues à jour.
+Cela permet de rapidement savoir si une nouvelle connexion entraîne l'ouverture d'un service.
+
+\section{Borne primale}
+
+La borne primale proposée dans le projet est l'algorithme de construction.
+Comme vu dans le jalon 3, elle donne cependant des résultats assez éloignés.
+Pour augmenter les chances de couper dans l'arbre de résolution, une métaheuristique de type tabou a été implémentée.
+Cependant, elle n'a pas été finement réglée. Elle permet d'obtenir tout de même de meilleures solutions que l'algorithme glouton. \newline
+
+\begin{align*}
+\begin{tabular}{|c|c|c|c|}
+    \hline
+    instance & meilleure solution & tabou & heuristique \\
+    \hline
+    Holmberg p14 & 7137 & 7142 & 8151 \\
+    Holmberg p15 & 8808 & 9097 & 9751 \\
+    Holmberg p20 & 10486 & 10643 & 11324 \\
+    Holmberg p22 & 7092 & 7906 & 9697 \\
+    Holmberg p23 & 8746 & 9306 & 10897 \\
+    Beasley cap64 & 1053197.4375 & 1059014.7 & 1291646.925 \\
+    Beasley cap73 & 1010641.45 & 1023841.375 & 1248142.9 \\
+    Beasley cap94 & 950608.425 & 981655.425 & 1247180.95 \\
+    Beasley cap103 & 895592.7625* & 907653.1875 & 1248142.9 \\
+    Beasley cap122 & 871199.7375* & 868947.425 & 1180037.1875 \\
+    \hline
+\end{tabular}
+\end{align*}
+
+\section{Borne duale}
+
+La relaxation continue était proposée comme borne duale.
+Pour l'améliorer, certains papiers suggéraient l'ajout des contraintes supplémentaires dans la modélisétion : $x_{ij} \leq y_j$.
+Les deux modélisations ont été testées dans l'algorithme de résolution. La seconde fournit une borne toujours meilleure.
+Cependant, elle est plus lente à calculer et peut dans ce cas conduire à de moins bons temps de résolution.
+
+\section{Algorithme de Branch and Bound}
+
+L'algorithme de branch and bound a été implémenté de manière itérative afin d'éviter les problèmes de dépassement de pile. \newline
+
+Une solution partielle est construite en fonction de l'avancement dans la résolution.
+En suivant ce qui était proposé dans les papiers, ce sont les variables d'ouverture qui sont affectées en premier.
+Ensuite, les variables de services sont affectées. L'ordre d'affectation est celui d'apparition des variables. \newline
+
+Lors de l'affectation des variables de connexion, la faisabilité de la solution est vérifiée.
+La capacité restante des services, qui est maintenue à jour, permet de conclure si la contrainte de capacité sera encore respectée après une nouvelle connexion.
+
+\section{Résultats}
+
+Voici les résultats obtenus à partir des choix explicités.
+Pour chaque instance, le temps de résolution est indiqué avec glpk, le branch and bound avec la relaxation continue originale et enfin le branch and bound avec la relaxation continue avec les contraintes additionnelles.
+Lorsque le temps maximum est atteint (600 s), la meilleure solution obtenue est indiquée entre parenthèses.
+
+\begin{align*}
+\begin{tabular}{|c|c|c|c|c|}
+    \hline
+    instance & meilleure solution & temps glpk & temps R1 & temps R2 \\
+    \hline
+    Holmberg p14 & 7137 & 7.627 & 75.08 & 7.615 \\
+    Holmberg p15 & 8808 & 3.728 & 73.019 & 117.92 \\
+    Holmberg p20 & 10486 & 5.093 & 113.05 & 284.14 \\
+    Holmberg p22 & 7092 & 9.569 & 160.72 & 155.20 \\
+    Holmberg p23 & 8746 & 5.504 & 140.05 & 195.344 \\
+    Beasley cap64 & 1053197.4375 & 0.438 & 600 (1059014.70) & 610 (59014.7) \\
+    Beasley cap73 & 1010641.45 & 1.914 & 27.164 & 0.52 \\
+    Beasley cap94 & 950608.425 & 53.991 & 600 (981655.425) & 600 (981655.425) \\
+    Beasley cap103 & 893782.112500 & 600 (894573.7125) & 600 (907653.1875) & 2.70 \\
+    Beasley cap122 & ? & 600 (871199.7375) & 600 (868947.425) & 600 (868947.425) \\
+    \hline
+\end{tabular}
+\end{align*}
+
+\section{Conclusion}
+
+On remarque que pour la majorité des instances, le temps de résolution avec glpk est plus court.
+La deuxième relaxation conduit à des temps meilleurs que pour la première pour l'instance p14 et p20.
+Pour les autres instances, c'est la première relaxation qui donne de meilleurs temps. Cela vient du fait que, même si elle est de meilleure qualité, la deuxième relaxation est plus longue à calculer. \newline
+
+Les temps obtenus pour l'instance cap103 montrent que même si la taille de l'instance augmente, une forme particulière permet de rapidement la résoudre avec des algorithmes basiques. Il serait intéressait d'analyser la forme particulière qui permet d'obtenir ce temps pour R2.
+On remarque également que l'instance p14 est plus facile à résoudre que les autres d'Holmberg avec R2. Cette instance doit encore une fois présenter une forme particulière. \newline
+
+Finalement, utiliser uniquement les mécanismes de base du branch and bound, même en bénéficiant d'information sur le problème, n'est pas suffisiant pour rivaliser avec un solveur générique, mise à part pour des formes d'instances particulières. Il est donc nécessaire d'ajouter des méchanismes plus sophistiqués afin de rendre le programme plus efficace.

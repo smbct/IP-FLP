@@ -12,7 +12,7 @@
 #include <math.h>
 
 //------------------------------------------------------------------------------
-void construireACO(Solution* best, int localsearch, int tabuListLenght, long tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu, unsigned int seed) {
+void construireACO(Solution* best, int localsearch, int tabuListLenght, long tmaxtabu, long tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu, unsigned int seed) {
     //variable
         long tstart = clock(); //pour le critère d'arret
         int n = best->pb->n; //nombre de client
@@ -72,7 +72,8 @@ void construireACO(Solution* best, int localsearch, int tabuListLenght, long tma
             //nouvelle population
             for (i = 0; i<n_ants; ++i) {
                 resetSolution(&solFourmi[i]);
-                constructionFourmi(&solFourmi[i], probability);   
+                constructionFourmi(&solFourmi[i], probability);
+                //TODO la recherche locale   
             }
 
             //mise a jour du best
@@ -87,7 +88,7 @@ void construireACO(Solution* best, int localsearch, int tabuListLenght, long tma
 }
 
 //------------------------------------------------------------------------------
-void constructionFourmi(Solution* sol, double** probability) { //TODO la recherche locale
+void constructionFourmi(Solution* sol, double** probability) {
     //variables
         int continuer = 1;
         double somme, somme2; //pour la roulette biaise
