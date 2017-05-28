@@ -10,3 +10,79 @@
 100/100-1_100-2.tsp --time 1
 100/100-1_100-3.tsp --time 2
 100/100-1_100-4.tsp --time 3
+
+p1  --tmax 20 --bestval 8848  
+p2  --tmax 20 --bestval 7913  
+p3  --tmax 20 --bestval 9314  
+p4  --tmax 20 --bestval 10714 
+p5  --tmax 20 --bestval 8838  
+p6  --tmax 20 --bestval 7777  
+p7  --tmax 20 --bestval 9488  
+p8  --tmax 20 --bestval 11088 
+p9  --tmax 20 --bestval 8462  
+p10 --tmax 20 --bestval 7617  
+p11 --tmax 20 --bestval 8932  
+p12 --tmax 20 --bestval 10132 
+\hline
+p13 --tmax 50 --bestval 8252  
+p14 --tmax 50 --bestval 7137  
+p15 --tmax 50 --bestval 8808  
+p16 --tmax 50 --bestval 10408 
+p17 --tmax 50 --bestval 8227  
+p18 --tmax 50 --bestval 7125  
+p19 --tmax 50 --bestval 8886  
+p20 --tmax 50 --bestval 10486 
+p21 --tmax 50 --bestval 8068  
+p22 --tmax 50 --bestval 7092  
+p23 --tmax 50 --bestval 8746  
+p24 --tmax 50 --bestval 10273 
+\hline
+p25 --tmax 150 --bestval 11630
+p26 --tmax 150 --bestval 10771
+p27 --tmax 150 --bestval 12322
+p28 --tmax 150 --bestval 13722
+p29 --tmax 150 --bestval 12371
+p30 --tmax 150 --bestval 11331
+p31 --tmax 150 --bestval 13331
+p32 --tmax 150 --bestval 15331
+p33 --tmax 150 --bestval 11629
+p34 --tmax 150 --bestval 10632
+p35 --tmax 150 --bestval 12232
+p36 --tmax 150 --bestval 13832
+p37 --tmax 150 --bestval 11258
+p38 --tmax 150 --bestval 10551
+p39 --tmax 150 --bestval 11824
+p40 --tmax 150 --bestval 13024
+\hline
+p41 --tmax 250 --bestval 6589
+p42 --tmax 250 --bestval 5663
+p43 --tmax 250 --bestval 5214
+p44 --tmax 250 --bestval 7028
+p45 --tmax 250 --bestval 6251
+p46 --tmax 250 --bestval 5651
+p47 --tmax 250 --bestval 6228
+p48 --tmax 250 --bestval 5596
+p49 --tmax 250 --bestval 5302
+p50 --tmax 250 --bestval 8741
+p51 --tmax 250 --bestval 7414
+p52 --tmax 250 --bestval 9178
+p53 --tmax 250 --bestval 8531
+p54 --tmax 250 --bestval 8777
+p55 --tmax 250 --bestval 7654
+\hline
+p56 --tmax 350 --bestval 21103
+p57 --tmax 350 --bestval 26039
+p58 --tmax 350 --bestval 37239
+p59 --tmax 350 --bestval 27282
+p60 --tmax 350 --bestval 20534
+p61 --tmax 350 --bestval 24454
+p62 --tmax 350 --bestval 32643
+p63 --tmax 350 --bestval 25105
+p64 --tmax 350 --bestval 20530
+p65 --tmax 350 --bestval 24445
+p66 --tmax 350 --bestval 31415
+p67 --tmax 350 --bestval 24848
+p68 --tmax 350 --bestval 20538
+p69 --tmax 350 --bestval 24532
+p70 --tmax 350 --bestval 32321
+p71 --tmax 350 --bestval 25540

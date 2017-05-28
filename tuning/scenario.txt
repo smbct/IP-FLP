@@ -68,7 +68,7 @@ trainInstancesDir = ./instances
 
 ## Directory where testing instances are located, either absolute or relative
 ## to current directory.
-# testInstancesDir = ""
+testInstancesDir = "instances"
 
 ## File containing a list of test instances and optionally additional
 ## parameters for them.  If empty or NULL, do not use a file.
