@@ -109,12 +109,12 @@ void resoudre(Solution* sol, int localsearch, int tabuListLenght, clock_t tmax, 
 
     afficherSolution(sol);    
 
-    printf("Lancement du branch & bound\n");
+    //printf("Lancement du branch & bound\n");
 
-    branchBoundIter(sol);
+    //branchBoundIter(sol);
 
-    printf("Solution optimale : \n");
+    //printf("Solution optimale : \n");
 
-    afficherSolution(sol);
+    //afficherSolution(sol);
 
 }
