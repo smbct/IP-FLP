@@ -12,7 +12,7 @@
  * \brief effectue une recherche tabu
  * \param meilleure la meilleure solution trouvée
  */
-void rechercheTabu(Solution* meilleure);
+void rechercheTabu(Solution* meilleure, int longueurTabu, long tmax);
 
 /**
  * \brief sélection de la prochaine solution à partir de laquelle chercher

@@ -7,7 +7,7 @@
 ## value on the command line).
 
 ## File that contains the description of the parameters.
-parameterFile = ./parameters.txt
+parameterFile = "parameters.txt"
 
 ## Directory where the programs will be run.
 # execDir = "./"
@@ -18,7 +18,7 @@ parameterFile = ./parameters.txt
 
 ## Directory where tuning instances are located, either absolute path or
 ## relative to current directory.
-trainInstancesDir = ./instances
+trainInstancesDir = "instances"
 
 ## File with a list of instances and (optionally) parameters.
 ## If empty or NULL, do not use a file.

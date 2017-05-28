@@ -73,7 +73,14 @@ void construireACO(Solution* best, int localsearch, int tabuListLenght, long tma
             for (i = 0; i<n_ants; ++i) {
                 resetSolution(&solFourmi[i]);
                 constructionFourmi(&solFourmi[i], probability);
-                //TODO la recherche locale   
+                //recherche locale
+                if (1 == localsearch) {
+                    rechercheLocale(&solFourmi[i], 0);
+                } else if (2 == localsearch) {
+                    rechercheLocale(&solFourmi[i], 1);
+                } else if (3 == localsearch) {
+                    rechercheTabu(&solFourmi[i], tabuListLenght, tmaxtabu);
+                }
             }
 
             //mise a jour du best
@@ -85,6 +92,20 @@ void construireACO(Solution* best, int localsearch, int tabuListLenght, long tma
 
         }
     //fin
+        // liberation des matrices
+            for(i = 0; i < n; ++i) {
+                free(pheromone[i]);
+                free(heuristic[i]);
+                free(probability[i]);
+            }
+            free(pheromone);
+            free(heuristic);
+            free(probability);
+        //suppression de la colonie
+            for(i = 0; i < n_ants; ++i) {
+                detruireSolution(&solFourmi[i]);
+            }
+            free(solFourmi);
 }
 
 //------------------------------------------------------------------------------
@@ -191,6 +212,7 @@ void majPheromones(Solution* best, int n_ants, Solution* solFourmi, double** phe
                 pheromone[j][solFourmi[indices[i]].connexionClient[j]] += 1.0 / solFourmi[indices[i]].z;
             }
         }
+        free(indices); free(val);
     } else/* if(2 == pheremononeUpdateScheme) */{ //rank base
         //tri des solutions
         int * indices = malloc((long unsigned int)n_ants*sizeof(int));
@@ -209,6 +231,7 @@ void majPheromones(Solution* best, int n_ants, Solution* solFourmi, double** phe
             }
             acc *= nu;
         }
+        free(indices); free(val);
     }
 
 }
