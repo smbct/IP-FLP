@@ -22,9 +22,9 @@
  * \param[in] pheremononeUpdateScheme methode de gestion des pheromones : 0->ACO, 1->EAS, 2->rank base AS
  * \param[in] nb_elit si EAS nombre de solution elite
  * \param[in] nu si rank base facteur de reduction en fonction du rang
-
+ * \param[in] seed gaine du generateur aleatoire
  */
-void construireACO(Solution* best, int localsearch, int tabuListLenght, long tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu);
+void construireACO(Solution* best, int localsearch, int tabuListLenght, long tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu, unsigned int seed);
 
 /**
  * \brief construction d'une solution en suivant les traces

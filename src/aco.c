@@ -12,7 +12,7 @@
 #include <math.h>
 
 //------------------------------------------------------------------------------
-void construireACO(Solution* best, int localsearch, int tabuListLenght, long tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu) {
+void construireACO(Solution* best, int localsearch, int tabuListLenght, long tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu, unsigned int seed) {
     //variable
         long tstart = clock(); //pour le critère d'arret
         int n = best->pb->n; //nombre de client
@@ -23,9 +23,9 @@ void construireACO(Solution* best, int localsearch, int tabuListLenght, long tma
         double ** probability; //information combine des pheromones et de l'heuristique
 
     //début
-printf("initialisation\n");
         //initialisation
-            srand((unsigned int)time(NULL)); // initialisation du générateur aléatoire
+            srand(seed); // initialisation du générateur aléatoire
+
             // initialisation des matrices
             pheromone = malloc((long unsigned int)n*sizeof(double*));
             heuristic = malloc((long unsigned int)n*sizeof(double*));
@@ -39,7 +39,7 @@ printf("initialisation\n");
                     pheromone[i][j] = pheromone_init;
 
                     //calcul de la valeur heuristique
-                    heuristic[i][j] = 1.0 / best->pb->liaisons[j][i];
+                    heuristic[i][j] = 1.0 / (0.1 + best->pb->liaisons[j][i]);
                 }
             }
 
@@ -60,39 +60,34 @@ printf("initialisation\n");
             }
 
             copierSolution(&solFourmi[tmp], best);
-printf("recherche\n");
+            
         //recherche
         while (clock() - tstart < tmax*CLOCKS_PER_SEC) {
-printf("1\n");
             //mise a jour des pheromones
             majPheromones(best, n_ants, solFourmi, pheromone, rho, pheremononeUpdateScheme, nb_elit, nu);
-printf("2\n");
+
             //mise a jour des probabilite
             calculProba( pheromone, heuristic, probability, n, m, alpha, beta);
-printf("3\n");
+
             //nouvelle population
             for (i = 0; i<n_ants; ++i) {
-printf("3.1\n");
                 resetSolution(&solFourmi[i]);
-printf("3.2\n");
                 constructionFourmi(&solFourmi[i], probability);   
-printf("3.3\n");
             }
-printf("4\n");
+
             //mise a jour du best
             tmp = -1;
             for (i = 0; i<n_ants; ++i) {
                 if (solFourmi[i].z < best->z) { tmp = i; }
             }
             if (tmp >= 0) {copierSolution(&solFourmi[tmp], best);}
-printf("5\n");
+
         }
     //fin
 }
 
 //------------------------------------------------------------------------------
 void constructionFourmi(Solution* sol, double** probability) { //TODO la recherche locale
-printf("3.2.1\n");
     //variables
         int continuer = 1;
         double somme, somme2; //pour la roulette biaise
@@ -100,14 +95,14 @@ printf("3.2.1\n");
         double tirage; //valeur aléaoire uniformement distribué
         int i; //compteur de boucle
         int trouve; //si on a trouve notre facilite
-printf("3.2.2\n");
+
     //debut
     while(continuer) {
         // sélection d'une connexion pour le premier client non affecté
         // roulette biaisée pour sélectionner le service auquel l'affecter
         somme = 0;
         min = -1.;
-printf("3.2.3\n");
+
         for(i = 0; i < sol->pb->m; i++) {
             if(sol->capaRestantes[i] >= sol->pb->demandes[sol->nbVarClientFixees]) {
                 somme += probability[sol->nbVarClientFixees][i];
@@ -116,7 +111,7 @@ printf("3.2.3\n");
                 }
             }
         }
-printf("3.2.4 : %lf\n", min);
+
         if(min > 0) {
             tirage = aleatoire(min, somme);
             somme2 = 0;
@@ -137,34 +132,25 @@ printf("3.2.4 : %lf\n", min);
                 }
 
             }
-printf("3.2.5\n");
+
             // connexion au service trouvé dans la solution
             sol->connexionClient[sol->nbVarClientFixees] = i;
-printf("3.2.5.1 : %i %i\n",i,sol->nbVarClientFixees);
             sol->z += sol->pb->liaisons[i][sol->nbVarClientFixees];
-printf("3.2.5.2\n");
             if(sol->services[i] != 1) {
-printf("3.2.5.3\n");
                 if(sol->services[i] == -1) {
                     sol->nbVarServicesFixees ++;
                 }
-printf("3.2.5.4\n");
                 sol->services[i] = 1;
-printf("3.2.5.5\n");
                 sol->z += sol->pb->couts[i];
-printf("3.2.5.6\n");
             }
-printf("3.2.6\n");
             sol->nbVarClientFixees ++;
         } else { // aucune connexion possible, la fourmi est bloquée
             continuer = 0;
             sol->z = -1.;
         }
-printf("3.2.7\n");
         if(sol->nbVarClientFixees == sol->pb->n) {
             continuer = 0; // une solution a été trouvée
         }
-printf("3.2.8\n");
     }
 }
 

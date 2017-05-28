@@ -15,7 +15,7 @@
 #include "aco.h"
 #include "tabu.h"
 
-void resoudre(Solution* sol, int localsearch, int tabuListLenght, clock_t tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu);
+void resoudre(Solution* sol, int localsearch, int tabuListLenght, clock_t tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu, double bestval, unsigned int seed);
 
 //------------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
@@ -34,6 +34,9 @@ int main(int argc, char* argv[]) {
         int pheremononeUpdateScheme; //methode de gestion des pheromones : 0->ACO, 1->EAS, 2->rank base AS
         int nb_elit; //si EAS nombre de solution elite
         double nu; //si rank base facteur de reduction en fonction du rang
+        unsigned int seed; //graine du generateur aleatoire
+        double bestval; //meilleure valeur connue pour l'instance
+
 
 
     //reading all parameter
@@ -78,7 +81,14 @@ int main(int argc, char* argv[]) {
         } else if(strcmp(argv[i], "--instance") == 0) {
             instanceFile = argv[i+1];
             i++;
-        }
+        } else if(strcmp(argv[i], "--seed") == 0){
+            seed = atoi(argv[i+1]);
+            i++;
+        } else if(strcmp(argv[i], "--bestval") == 0){
+            bestval = atof(argv[i+1]);
+            i++;
+        } 
+
     }
 
     //debut
@@ -90,7 +100,7 @@ int main(int argc, char* argv[]) {
 
     creerSolution(&pb, &sol);
 
-    resoudre(&sol, localsearch, tabuListLenght, tmax, alpha, beta, rho, pheromone_init, n_ants, pheremononeUpdateScheme, nb_elit, nu);
+    resoudre(&sol, localsearch, tabuListLenght, tmax, alpha, beta, rho, pheromone_init, n_ants, pheremononeUpdateScheme, nb_elit, nu, bestval, seed);
 
     detruireSolution(&sol);
 
@@ -101,13 +111,15 @@ int main(int argc, char* argv[]) {
 }
 
 //------------------------------------------------------------------------------
-void resoudre(Solution* sol, int localsearch, int tabuListLenght, clock_t tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu) {
+void resoudre(Solution* sol, int localsearch, int tabuListLenght, clock_t tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu, double bestval, unsigned int seed) {
 
-    printf("Lancement de l'ACO\n");
+    //printf("Lancement de l'ACO\n");
 
-    construireACO(sol, localsearch, tabuListLenght, tmax, alpha, beta, rho, pheromone_init, n_ants, pheremononeUpdateScheme, nb_elit, nu);
+    construireACO(sol, localsearch, tabuListLenght, tmax, alpha, beta, rho, pheromone_init, n_ants, pheremononeUpdateScheme, nb_elit, nu, seed);
 
-    afficherSolution(sol);    
+    printf("%lf\n", 100.0*(double)(sol->z - bestval)/(double)bestval); //relative deviation en %
+
+    //afficherSolution(sol);    
 
     //printf("Lancement du branch & bound\n");
 
