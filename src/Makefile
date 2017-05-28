@@ -8,5 +8,5 @@ all: main
 
 main: $(SOURCES:.c=.o)
 
-clean: 
+clean:
 	rm ./*.o

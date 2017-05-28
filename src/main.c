@@ -14,6 +14,7 @@
 #include "solver.h"
 #include "aco.h"
 #include "tabu.h"
+#include "rechercheLocale.h"
 
 void resoudre(Solution* sol, int localsearch, int tabuListLenght, clock_t tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu, double bestval, unsigned int seed);
 
@@ -87,7 +88,7 @@ int main(int argc, char* argv[]) {
         } else if(strcmp(argv[i], "--bestval") == 0){
             bestval = atof(argv[i+1]);
             i++;
-        } 
+        }
 
     }
 
@@ -119,7 +120,7 @@ void resoudre(Solution* sol, int localsearch, int tabuListLenght, clock_t tmax, 
 
     printf("%lf\n", 100.0*(double)(sol->z - bestval)/(double)bestval); //relative deviation en %
 
-    //afficherSolution(sol);    
+    //afficherSolution(sol);
 
     //printf("Lancement du branch & bound\n");
 
