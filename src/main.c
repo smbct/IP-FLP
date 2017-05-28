@@ -95,6 +95,8 @@ int main(int argc, char* argv[]) {
 
     }
 
+long tstart = clock();
+
     //debut
     Probleme pb;
 
@@ -110,6 +112,8 @@ int main(int argc, char* argv[]) {
 
     detruireProbleme(&pb);
 
+printf("%lf  \n", (double)((double)(clock() - tstart)/(double)(CLOCKS_PER_SEC)));
+
     //fin
     return 0;
 }
@@ -119,9 +123,9 @@ void resoudre(Solution* sol, int localsearch, int tabuListLenght, long tmaxtabu,
 
     //printf("Lancement de l'ACO\n");
 
-    construireACO(sol, localsearch, tabuListLenght, tmax, alpha, beta, rho, pheromone_init, n_ants, pheremononeUpdateScheme, nb_elit, nu, seed);
+    construireACO(sol, localsearch, tabuListLenght, tmaxtabu, tmax, alpha, beta, rho, pheromone_init, n_ants, pheremononeUpdateScheme, nb_elit, nu, seed);
 
-    printf("%lf\n", 100.0*(double)(sol->z - bestval)/(double)bestval); //relative deviation en %
+    printf("%lf  ", 100.0*(double)(sol->z - bestval)/(double)bestval); //relative deviation en %
 
     //afficherSolution(sol);
 

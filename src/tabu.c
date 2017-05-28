@@ -9,15 +9,16 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 //------------------------------------------------------------------------------
-void rechercheTabu(Solution* meilleure) {
+void rechercheTabu(Solution* meilleure, int longueurTabu, long tmax) {
 
     // construction gloutonne
-    construction(meilleure);
+    //construction(meilleure);
 
     // printf("la construction donne z = %lf\n", meilleure->z);
-
+    long tstart = clock(); //pour le critère d'arret
     Solution sol;
     creerSolution(meilleure->pb, &sol);
     copierSolution(meilleure, &sol);
@@ -31,12 +32,9 @@ void rechercheTabu(Solution* meilleure) {
         }
     }
 
-    int longueurTabu = 7;
-
     int nbIt = 0;
-    int nbItMax = 15;
 
-    while(nbIt < nbItMax) {
+    while(clock() - tstart < tmax*CLOCKS_PER_SEC) {
 
 
         selectionnerVoisin(&sol, meilleure, tabuListe, nbIt, longueurTabu);
@@ -45,7 +43,6 @@ void rechercheTabu(Solution* meilleure) {
         // si la solution actuelle est meilleure que la meilleure trouvée, mise à jour
         if(sol.z < meilleure->z) {
             copierSolution(&sol, meilleure);
-            nbItMax = nbIt + 50;
         }
 
         nbIt ++;
