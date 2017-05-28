@@ -13,6 +13,7 @@
  * \param[out] best la meilleure solutio trouvée par l'algorithme
  * \param[in] localsearch code de la recherche locale (0 -> sans, 1->descente, 2->PPD, 3->tabou)
  * \param[in] tabuListLenght si localsearch == 3 taille de la liste tabou
+ * \param[in] tmaxtabu si localsearch == 3 budget de temps pour la recherche tabou
  * \param[in] tmax budget de temps de calcul
  * \param[in] alpha puissance des pheromones
  * \param[in] beta puissance de l'information heuristique
@@ -24,7 +25,7 @@
  * \param[in] nu si rank base facteur de reduction en fonction du rang
  * \param[in] seed gaine du generateur aleatoire
  */
-void construireACO(Solution* best, int localsearch, int tabuListLenght, long tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu, unsigned int seed);
+void construireACO(Solution* best, int localsearch, int tabuListLenght, long tmaxtabu, long tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu, unsigned int seed);
 
 /**
  * \brief construction d'une solution en suivant les traces
