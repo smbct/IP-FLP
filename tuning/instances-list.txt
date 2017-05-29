@@ -4,7 +4,6 @@
 # (see scenario.txt.tmpl) and an optional sequence of instance-specific
 # parameters that will be passed to target-runnerx when invoked on that
 # instance.
-
 # Empty lines and comments are ignored.
 p1.dat  --tmax 20 --bestval 8848  
 p2.dat  --tmax 20 --bestval 7913  
