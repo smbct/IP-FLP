@@ -1,0 +1,6 @@
+\beamer@endinputifotherversion {3.24pt}
+\beamer@sectionintoc {1}{Single Source Capacitated Location Problem}{3}{0}{1}
+\beamer@sectionintoc {2}{Ant Colony Optimization}{5}{0}{2}
+\beamer@sectionintoc {3}{Local search}{7}{0}{3}
+\beamer@sectionintoc {4}{Tuning}{9}{0}{4}
+\beamer@sectionintoc {5}{Further improvement}{11}{0}{5}
