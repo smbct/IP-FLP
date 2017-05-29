@@ -1,5 +1,6 @@
-\beamer@endinputifotherversion {3.24pt}
-\beamer@sectionintoc {1}{Single Source Capacitated Location Problem}{3}{0}{1}
-\beamer@sectionintoc {2}{Ant Colony Optimization}{5}{0}{2}
-\beamer@sectionintoc {3}{Local search}{8}{0}{3}
-\beamer@sectionintoc {4}{Experiments}{10}{0}{4}
+\beamer@endinputifotherversion {3.36pt}
+\beamer@sectionintoc {1}{Single Source Capacitated Facility Location Problem}{3}{0}{1}
+\beamer@sectionintoc {2}{Ant Colony Optimization}{6}{0}{2}
+\beamer@sectionintoc {3}{Local search}{9}{0}{3}
+\beamer@sectionintoc {4}{Experiments}{12}{0}{4}
+\beamer@sectionintoc {6}{References}{17}{0}{5}

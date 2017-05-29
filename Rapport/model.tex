@@ -1,0 +1,47 @@
+
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[frenchb]{babel}
+
+\usepackage{a4wide}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+\usepackage{hyperref}
+
+
+\title{Localisation de services : jalon 4}
+\author{Samuel Buchet}
+\date{Decembre 2016}
+
+\begin{document}
+
+Variables:
+
+\begin{align*}
+x_{ij} &= \begin{cases}
+        1 \text{ if customer j is connected to facility i}\\
+        0 \text{ otherwise} \\
+    \end{cases}
+&&i \in \{1..m\}, j \in \{1,..,n\} \\
+y_i &= \begin{cases}
+        1 \text{ if facility i is opened}\\
+        0 \text{ otherwise} \\
+    \end{cases}
+&&i \in \{1,..,m\}
+\end{align*}
+
+Linear program:
+
+\begin{align}
+min \quad z = &\sum\limits_{i=1}^m \sum\limits_{j=1}^n x_{ij}c_{ij} + \sum\limits_{i=1}^m y_i f_i \\
+  s/c \quad &\sum\limits_{j=1}^n w_j x_{ij} \leq s_i y_i \quad \forall i \in \{1, .., m\} \\
+            &\sum\limits_{i=1}^m x_{ij} = 1 \quad \forall j \in \{1, .., n\} \\
+            &x_{ij} \in \{0,1\}, y_i \in \{0,1\} \quad \forall i \in \{1,..,m\}, \forall j \in \{1,..,n\}
+\end{align}
+
+\end{document}

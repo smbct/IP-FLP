@@ -8,7 +8,7 @@
 % template and not specifically distribute it as part of a another
 % package/program, I grant the extra permission to freely copy and
 % modify this file as you see fit and even to delete this copyright
-% notice. 
+% notice.
 
 \documentclass{beamer}
 \usepackage[utf8]{inputenc}
@@ -21,10 +21,11 @@
 \usepackage{filecontents}
 \usepackage{graphics}
 
+\usepackage{graphicx}
+
 \usetheme{Singapore}
 \setbeamertemplate{navigation symbols}{}
 \setbeamertemplate{footline}[frame number]{}
-
 
 \title{ACO for SSCFLP}
 
@@ -57,12 +58,32 @@
   % You might wish to add the option [pausesections]
 \end{frame}
 
-\section{Single Source Capacitated Location Problem}
+\section{Single Source Capacitated Facility Location Problem}
 
-\begin{frame}{bla}
+\begin{frame}{Presentation of the problem}
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.3]{schema}
+    \end{figure}
+
+    \begin{itemize}
+        \item NP-hard combinatorial optimization problem
+        \item m places to (eventually) open facilities
+        \item n customers to be connected to the facilities
+        \item each facility has an opening cost and a demand
+        \item each customer has a connection cost and a capacity
+        \item goal: minimize the cost
+    \end{itemize}
 
 \end{frame}
 
+\begin{frame}{Linear program}
+    \begin{figure}
+    \centering
+    \includegraphics[scale=0.32]{model}
+\end{figure}
+\end{frame}
 
 \section{Ant Colony Optimization}
 
@@ -74,7 +95,7 @@ pheromone and heuristic are in matrices $\mathbb{R}^{n \times m}$, one value for
 \item
 heuristic information is $1/ \text{association cost}$, it doesn't take in account the opening cost
 \item
-to construct a solution we take each client and associate them with a lean wheel over the facility with enough remaining capacity
+to construct a solution we take each customer and associate them with a lean wheel over the facility with enough remaining capacity
 \end{itemize}
 \end{frame}
 
@@ -83,7 +104,7 @@ to construct a solution we take each client and associate them with a lean wheel
 \begin{itemize}
 \item
 ACS : all ant are equal \\
-$\Delta \tau_{ij} = \sum \limits_{bs \in T} \Delta \tau_{ij}^{bs}$ 
+$\Delta \tau_{ij} = \sum \limits_{bs \in T} \Delta \tau_{ij}^{bs}$
 \item
 EAS : only best one drop off \\
 $\Delta \tau_{ij} = \sum \limits_{i = 1}^{\text{nbElite}} \Delta \tau_{ij}^{bs\left[i\right]}$
@@ -96,8 +117,21 @@ Where $\Delta \tau_{ij}^{bs} = \frac{\delta_{bs.association}(i,j)}{bs.val}$
 
 \section{Local search}
 
-\begin{frame}{bla}
+\begin{frame}{Principle}
+    \begin{itemize}
+        \item definition of a neighborhood
+        \item the neighborhood is explored
+        \item hopefully a better solution is found
+        \item the process is repeated until the solution cannot be improved anymore
+    \end{itemize}
+\end{frame}
 
+\begin{frame}{Local Search for FLP}
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.27]{schemalstot}
+        \caption{ one move = connect a customer to another facility}
+    \end{figure}
 \end{frame}
 
 \section{Experiments}
@@ -150,6 +184,20 @@ Like that it's pretty bad, but it's complicated problem
 \item
 With an improved version we should be able to speed up exacts algorithms
 \end{itemize}
+\end{frame}
+
+\section{References}
+
+\begin{frame}{References}
+
+\begin{itemize}
+
+    \item Icons made by \href{http://www.freepik.com}{Freepik} from \href{http://www.flaticon.com}{www.flaticon.com} is licensed by \href{http://creativecommons.org/licenses/by/3.0/}{Creative Commons BY 3.0}
+
+    \item Icons made by \href{http://www.flaticon.com/authors/icomoon}{Icomoon} from \href{http://www.flaticon.com}{www.flaticon.com} is licensed by \href{http://creativecommons.org/licenses/by/3.0/}{Creative Commons BY 3.0}
+
+\end{itemize}
+
 \end{frame}
 
 \end{document}
