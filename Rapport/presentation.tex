@@ -35,7 +35,7 @@
 
 \AtBeginSection[]
 {
-  \begin{frame}<beamer>{Sommaire}
+  \begin{frame}<beamer>{Contents}
     \tableofcontents[currentsection]
   \end{frame}
 }
@@ -88,14 +88,14 @@
 \section{Ant Colony Optimization}
 
 \begin{frame}{Global shape}
-Branch only on association customer/facility :
+Decisions based only on customer/facility associations:
 \begin{itemize}
 \item
-pheromone and heuristic are in matrices $\mathbb{R}^{n \times m}$, one value for each association
+pheromone and heuristic information are in matrices $\mathbb{R}^{n \times m}$, one value for each association
 \item
-heuristic information is $1/ \text{association cost}$, it doesn't take in account the opening cost
+heuristic information is $1/ \text{association cost}$, it does not take into account the opening cost
 \item
-to construct a solution we take each customer and associate them with a lean wheel over the facility with enough remaining capacity
+to construct a solution we take each customer and, with the help of a roulette, we associate them with a facility with enough remaining capacity
 \end{itemize}
 \end{frame}
 
@@ -103,13 +103,13 @@ to construct a solution we take each customer and associate them with a lean whe
 3 designs implemented :
 \begin{itemize}
 \item
-ACS : all ant are equal \\
+ACS : all ants are equal \\
 $\Delta \tau_{ij} = \sum \limits_{bs \in T} \Delta \tau_{ij}^{bs}$
 \item
-EAS : only best one drop off \\
+EAS : only the best one drops off pheromone \\
 $\Delta \tau_{ij} = \sum \limits_{i = 1}^{\text{nbElite}} \Delta \tau_{ij}^{bs\left[i\right]}$
 \item
-rank base : best one leave more \\
+rank based : best one leaves behind more pheromones \\
 $\Delta \tau_{ij} = \sum \limits_{i = 1}^{\text{nbAnt}} \Delta \rho^i \tau_{ij}^{bs\left[ i \right] }$, $\rho \in \left[ 0 ; 1 \right] $
 \end{itemize}
 Where $\Delta \tau_{ij}^{bs} = \frac{\delta_{bs.association}(i,j)}{bs.val}$
@@ -139,17 +139,17 @@ Where $\Delta \tau_{ij}^{bs} = \frac{\delta_{bs.association}(i,j)}{bs.val}$
 \begin{frame}{Using irace}
 \begin{itemize}
 \item
-Parameter setting have been done by irace
+Parameter settings have already been done by irace
 \item
-We use a set of 71 instances of different size :
+We use a set of 71 instances of different sizes :
 \begin{itemize}
 \item
-56 were used as training set
+56 were used as training sets
 \item
-21 were used as testing set
+21 were used as testing sets
 \end{itemize}
 \item
-At the end of the run irace think he can get better results with more time
+At the end of the run irace concludes that it is possible to obtain better results with more time
 \item<2->
 Demonstration with output parameter
 \end{itemize}
@@ -160,17 +160,17 @@ Demonstration with output parameter
 \item
 Perform a longer irace run
 \item
-Branch over the facility opening too :
+Decide which facility to open:
 \begin{itemize}
 \item
-modify pheromone and heuristic
+modify pheromone and heuristic information
 \item
 adapt the construction algorithm
 \end{itemize}
 \item
-Try other local search, like VND
+Try other local searches, like VND
 \item
-Try other pheromone update schema
+Try other pheromone update schemas
 
 \end{itemize}
 \end{frame}
@@ -180,9 +180,9 @@ Try other pheromone update schema
 \begin{frame}{Conclusion}
 \begin{itemize}
 \item
-Like that it's pretty bad, but it's complicated problem
+In conlcusion, we can say that the results from this research are not satisfactory, but then again, the problem is complicated.
 \item
-With an improved version we should be able to speed up exacts algorithms
+With an improved version we should be able to speed up exact algorithms
 \end{itemize}
 \end{frame}
 
