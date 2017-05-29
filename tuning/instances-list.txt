@@ -5,8 +5,8 @@
 # parameters that will be passed to target-runnerx when invoked on that
 # instance.
 # Empty lines and comments are ignored.
-p1.dat  --tmax 20 --bestval 8848  
-p2.dat  --tmax 20 --bestval 7913  
+p1.dat  --tmax 20 --bestval 8848
+p2.dat  --tmax 20 --bestval 7913
 p3.dat  --tmax 20 --bestval 9314  
 p4.dat  --tmax 20 --bestval 10714 
 p5.dat  --tmax 20 --bestval 8838  
