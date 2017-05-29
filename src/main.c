@@ -119,7 +119,7 @@ int main(int argc, char* argv[]) {
 
     detruireProbleme(&pb);
 
-    printf("temps : %lf  \n", (double)((double)(clock() - tstart)/(double)(CLOCKS_PER_SEC)));
+    // printf("temps : %lf  \n", (double)((double)(clock() - tstart)/(double)(CLOCKS_PER_SEC)));
 
     //fin
     return 0;
@@ -129,7 +129,7 @@ int main(int argc, char* argv[]) {
 void resoudre(Solution* sol, int localsearch, int tabuListLenght, long tmaxtabu, clock_t tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu, double bestval, unsigned int seed) {
 
     //juste pour tester l'aco
-    printf("Lancement de l'ACO\n");
+    printf("Starting the ACO...\n");
 
     construireACO(sol, localsearch, tabuListLenght, tmaxtabu, tmax, alpha, beta, rho, pheromone_init, n_ants, pheremononeUpdateScheme, nb_elit, nu, seed);
 

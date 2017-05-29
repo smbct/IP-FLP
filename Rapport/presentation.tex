@@ -110,7 +110,7 @@ EAS : only the best one drops off pheromone \\
 $\Delta \tau_{ij} = \sum \limits_{i = 1}^{\text{nbElite}} \Delta \tau_{ij}^{bs\left[i\right]}$
 \item
 rank based : best one leaves behind more pheromones \\
-$\Delta \tau_{ij} = \sum \limits_{i = 1}^{\text{nbAnt}} \Delta \rho^i \tau_{ij}^{bs\left[ i \right] }$, $\rho \in \left[ 0 ; 1 \right] $
+$\Delta \tau_{ij} = \sum \limits_{i = 1}^{\text{nbAnt}} \nu^i \Delta \tau_{ij}^{bs\left[ i \right] }$, $\nu \in \left[ 0 ; 1 \right] $
 \end{itemize}
 Where $\Delta \tau_{ij}^{bs} = \frac{\delta_{bs.association}(i,j)}{bs.val}$
 \end{frame}
