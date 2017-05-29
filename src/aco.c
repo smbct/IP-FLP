@@ -5,6 +5,8 @@
 
 #include "aco.h"
 #include "tri.h"
+#include "rechercheLocale.h"
+#include "tabu.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -60,7 +62,7 @@ void construireACO(Solution* best, int localsearch, int tabuListLenght, long tma
             }
 
             copierSolution(&solFourmi[tmp], best);
-   int date = 0;         
+   int date = 0;
         //recherche
         while (clock() - tstart < tmax*CLOCKS_PER_SEC) {
             date +=1;
@@ -195,7 +197,7 @@ void majPheromones(Solution* best, int n_ants, Solution* solFourmi, double** phe
 
     if (0 == pheremononeUpdateScheme) { //ACO
         //toutes les fourmies ajoutent de manière identiques
-        for(i = 0; i<n_ants; ++i) { //pour toutes les fourmis 
+        for(i = 0; i<n_ants; ++i) { //pour toutes les fourmis
             for(j = 0; j<n; ++j) { //pour tout les client
                 pheromone[j][solFourmi[i].connexionClient[j]] += 1.0 / solFourmi[i].z;
             }
@@ -209,7 +211,7 @@ void majPheromones(Solution* best, int n_ants, Solution* solFourmi, double** phe
             val[i] = solFourmi[i].z;
         }
         trierCroissant(n_ants, indices, val, val);
-        
+
         //seul les meilleurs ajoutent
         for (i = 0; i<nb_elit; ++i) {
             for(j = 0; j<n; ++j) {

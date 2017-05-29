@@ -72,13 +72,13 @@ void resetSolution(Solution* sol) {
 //------------------------------------------------------------------------------
 void afficherSolution(Solution* sol) {
 
-    printf("connexions :\n");
+    printf("connections:\n");
     for(int i = 0; i < sol->pb->n; i++) {
         printf("%d, ", sol->connexionClient[i]);
     }
     printf("\n");
 
-    printf("\nservices ouverts :\n");
+    printf("\nfacilities:\n");
     for(int i = 0; i < sol->pb->m; i++) {
         printf("%d, ", sol->services[i]);
     }
