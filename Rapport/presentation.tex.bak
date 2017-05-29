@@ -136,7 +136,7 @@ adapt the construction algorithm
 \item
 Try other local search, like VND
 \item
-Try other pheromone update schema
+try other pheromone update schema
 
 \end{itemize}
 \end{frame}
@@ -144,12 +144,7 @@ Try other pheromone update schema
 \section*{Conclusion}
 
 \begin{frame}{Conclusion}
-\begin{itemize}
-\item
-Like that it's pretty bad, but it's complicated problem
-\item
-With an improved version we should be able to speed up exacts algorithms
-\end{itemize}
+
 \end{frame}
 
 \end{document}
