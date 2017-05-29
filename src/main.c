@@ -16,7 +16,12 @@
 #include "tabu.h"
 #include "rechercheLocale.h"
 
-//./main --localsearch 2 --alpha 0.9516 --beta 0.9619 --rho 0.5448 --pheromone_init 0.3168 --n_ants 683 --pheremononeUpdateScheme 0 --seed 0 --instance Instances/Holmberg/p22.dat --tmax 50 --bestval 7092
+//./main --localsearch 2 --alpha 0.7 --beta 2 --rho 0.9 --pheromone_init 0.0005 --n_ants 700 --pheremononeUpdateScheme 2 --nu 0.6  --seed 0 --instance Instances/Holmberg/p11.dat --tmax 20 --bestval 8932
+//./main --localsearch 2 --alpha 0.7 --beta 2 --rho 0.9 --pheromone_init 0.0005 --n_ants 700 --pheremononeUpdateScheme 2 --nu 0.6  --seed 0 --instance Instances/Holmberg/p22.dat --tmax 50 --bestval 7092
+
+//./main --localsearch 2 --alpha 0.9516 --beta 0.9619 --rho 0.5448 --pheromone_init 0.3168 --n_ants 683 --pheremononeUpdateScheme 0  --seed 0 --instance Instances/Holmberg/p11.dat --tmax 20 --bestval 8932
+//./main --localsearch 2 --alpha 0.9516 --beta 0.9619 --rho 0.5448 --pheromone_init 0.3168 --n_ants 683 --pheremononeUpdateScheme 0  --seed 0 --instance Instances/Holmberg/p22.dat --tmax 50 --bestval 7092
+
 
 void resoudre(Solution* sol, int localsearch, int tabuListLenght, long tmaxtabu, clock_t tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu, double bestval, unsigned int seed);
 

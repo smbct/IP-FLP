@@ -60,9 +60,10 @@ void construireACO(Solution* best, int localsearch, int tabuListLenght, long tma
             }
 
             copierSolution(&solFourmi[tmp], best);
-            
+   int date = 0;         
         //recherche
         while (clock() - tstart < tmax*CLOCKS_PER_SEC) {
+            date +=1;
             //mise a jour des pheromones
             majPheromones(best, n_ants, solFourmi, pheromone, rho, pheremononeUpdateScheme, nb_elit, nu);
 
@@ -91,6 +92,7 @@ void construireACO(Solution* best, int localsearch, int tabuListLenght, long tma
             if (tmp >= 0) {copierSolution(&solFourmi[tmp], best);}
 
         }
+        printf("%i\n", date);
     //fin
         // liberation des matrices
             for(i = 0; i < n; ++i) {
@@ -158,6 +160,7 @@ void constructionFourmi(Solution* sol, double** probability) {
             // connexion au service trouvé dans la solution
             sol->connexionClient[sol->nbVarClientFixees] = i;
             sol->z += sol->pb->liaisons[i][sol->nbVarClientFixees];
+            sol->capaRestantes[i] -= sol->pb->demandes[sol->nbVarClientFixees];
             if(sol->services[i] != 1) {
                 if(sol->services[i] == -1) {
                     sol->nbVarServicesFixees ++;
@@ -168,7 +171,8 @@ void constructionFourmi(Solution* sol, double** probability) {
             sol->nbVarClientFixees ++;
         } else { // aucune connexion possible, la fourmi est bloquée
             continuer = 0;
-            sol->z = -1.;
+            resetSolution(sol);
+            constructionFourmi(sol, probability);
         }
         if(sol->nbVarClientFixees == sol->pb->n) {
             continuer = 0; // une solution a été trouvée
