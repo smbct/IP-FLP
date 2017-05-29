@@ -10,11 +10,13 @@
 
 #include "probleme.h"
 #include "solution.h"
-#include "bornes.h"
-#include "solver.h"
+//#include "bornes.h"
+//#include "solver.h"
 #include "aco.h"
 #include "tabu.h"
 #include "rechercheLocale.h"
+
+//./main --localsearch 2 --alpha 0.9516 --beta 0.9619 --rho 0.5448 --pheromone_init 0.3168 --n_ants 683 --pheremononeUpdateScheme 0 --seed 0 --instance Instances/Holmberg/p22.dat --tmax 50 --bestval 7092
 
 void resoudre(Solution* sol, int localsearch, int tabuListLenght, long tmaxtabu, clock_t tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu, double bestval, unsigned int seed);
 
@@ -95,7 +97,7 @@ int main(int argc, char* argv[]) {
 
     }
 
-long tstart = clock();
+    long tstart = clock();
 
     //debut
     Probleme pb;
@@ -112,7 +114,7 @@ long tstart = clock();
 
     detruireProbleme(&pb);
 
-printf("%lf  \n", (double)((double)(clock() - tstart)/(double)(CLOCKS_PER_SEC)));
+    printf("temps : %lf  \n", (double)((double)(clock() - tstart)/(double)(CLOCKS_PER_SEC)));
 
     //fin
     return 0;
@@ -121,20 +123,23 @@ printf("%lf  \n", (double)((double)(clock() - tstart)/(double)(CLOCKS_PER_SEC)))
 //------------------------------------------------------------------------------
 void resoudre(Solution* sol, int localsearch, int tabuListLenght, long tmaxtabu, clock_t tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu, double bestval, unsigned int seed) {
 
-    //printf("Lancement de l'ACO\n");
+    //juste pour tester l'aco
+    printf("Lancement de l'ACO\n");
 
     construireACO(sol, localsearch, tabuListLenght, tmaxtabu, tmax, alpha, beta, rho, pheromone_init, n_ants, pheremononeUpdateScheme, nb_elit, nu, seed);
 
-    printf("%lf  ", 100.0*(double)(sol->z - bestval)/(double)bestval); //relative deviation en %
+    printf("relative deviation : %lf \n", 100.0*(double)(sol->z - bestval)/(double)bestval);
 
-    //afficherSolution(sol);
+    afficherSolution(sol);
 
-    //printf("Lancement du branch & bound\n");
 
-    //branchBoundIter(sol);
+    //pour lancer la resolution exacte
+/*  printf("Lancement du branch & bound\n");
 
-    //printf("Solution optimale : \n");
+    branchBoundIter(sol);
 
-    //afficherSolution(sol);
+    printf("Solution optimale : \n");
 
+    afficherSolution(sol);
+*/
 }
