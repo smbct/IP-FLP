@@ -154,16 +154,25 @@ void branchBoundIter(Solution* sol) {
     // construction(&best);
     // printf("Valeur initiale de la solution gloutonne : %lf\n", best.z);
 
-    printf("Lancement d'une recherche tabou : \n");
-    int longueurTabu = 30;
-    long tmax = 1;
-    rechercheTabu(&best, longueurTabu, tmax);
-    printf("Valeur initiale retournée par tabou : %lf\n", best.z);
+    // printf("Lancement d'une recherche tabou : \n");
+    // int longueurTabu = 10;
+    // long tmax = 5;
+    // rechercheTabu(&best, longueurTabu, tmax);
+    // printf("Valeur initiale retournée par tabou : %lf\n", best.z);
+
+    // printf("Lancement d'une heuristique de colonies de fourmies : \n");
+    // --localsearch 2 --alpha 0.728 --beta 0.6774 --rho 0.1665 --pheromone_init 0.8331 --n_ants 118 --pheremononeUpdateScheme 0
+    // construireACO(sol, localsearch, tabuListLenght, tmaxtabu, tmax, alpha, beta, rho, pheromone_init, n_ants, pheremononeUpdateScheme, nb_elit, nu, seed);
+    // construireACO(&best, 2, 5, 5, 1, 0.728, 0.6774, 0.1665, 0.8331, 118, 0, 0, 0, 42);
+    // printf("Valeur initiale retournée par l'heuristique des colonies de fourmies : %lf\n", best.z);
 
     afficherSolution(&best);
 
     // printf("valeur initiale oracle : 9881.5\n");
     // best.z = 9881.5;
+
+    printf("valeur initiale oracle : 11630\n");
+    best.z = 11630;
 
     printf("\n\nLancement du B&B \n\n");
 
