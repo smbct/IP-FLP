@@ -10,8 +10,8 @@
 
 #include "probleme.h"
 #include "solution.h"
-//#include "bornes.h"
-//#include "solver.h"
+#include "bornes.h"
+#include "solver.h"
 #include "aco.h"
 #include "tabu.h"
 #include "rechercheLocale.h"
@@ -109,6 +109,8 @@ int main(int argc, char* argv[]) {
 
     chargerProbleme(&pb, instanceFile);
 
+    // afficherProbleme(&pb);
+
     Solution sol;
 
     creerSolution(&pb, &sol);
@@ -129,22 +131,22 @@ int main(int argc, char* argv[]) {
 void resoudre(Solution* sol, int localsearch, int tabuListLenght, long tmaxtabu, clock_t tmax, double alpha, double beta, double rho, double pheromone_init, int n_ants, int pheremononeUpdateScheme, int nb_elit, double nu, double bestval, unsigned int seed) {
 
     //juste pour tester l'aco
-    printf("Starting the ACO...\n");
-
-    construireACO(sol, localsearch, tabuListLenght, tmaxtabu, tmax, alpha, beta, rho, pheromone_init, n_ants, pheremononeUpdateScheme, nb_elit, nu, seed);
-
-    printf("relative deviation : %lf \n", 100.0*(double)(sol->z - bestval)/(double)bestval);
-
-    afficherSolution(sol);
+    // printf("Starting the ACO...\n");
+    //
+    // construireACO(sol, localsearch, tabuListLenght, tmaxtabu, tmax, alpha, beta, rho, pheromone_init, n_ants, pheremononeUpdateScheme, nb_elit, nu, seed);
+    //
+    // printf("relative deviation : %lf \n", 100.0*(double)(sol->z - bestval)/(double)bestval);
+    //
+    // afficherSolution(sol);
 
 
     //pour lancer la resolution exacte
-/*  printf("Lancement du branch & bound\n");
+    printf("Lancement du branch & bound\n");
 
     branchBoundIter(sol);
 
     printf("Solution optimale : \n");
 
     afficherSolution(sol);
-*/
+
 }

@@ -145,11 +145,22 @@ void branchBoundIter(Solution* sol) {
     creerSolution(sol->pb, &duale);
     creerSolution(sol->pb, &best);
 
+    // création et initialisation du problème relaché pour glpk
+    glp_prob* glp_prob_relax;
+    glp_prob_relax = glp_create_prob();
+    initGLPKProblemeRelache(glp_prob_relax, sol);
+
+    // printf("Construction gloutonne d'une première solution : \n");
     // construction(&best);
+    // printf("Valeur initiale de la solution gloutonne : %lf\n", best.z);
 
     printf("Lancement d'une recherche tabou : \n");
-    rechercheTabu(&best);
+    int longueurTabu = 30;
+    long tmax = 1;
+    rechercheTabu(&best, longueurTabu, tmax);
     printf("Valeur initiale retournée par tabou : %lf\n", best.z);
+
+    afficherSolution(&best);
 
     // printf("valeur initiale oracle : 9881.5\n");
     // best.z = 9881.5;
@@ -167,7 +178,16 @@ void branchBoundIter(Solution* sol) {
     begin = clock();
     temps = 0.;
 
+    int nbIt = 0;
+
     while(!listeVide(&liste) && temps < 600.) {
+
+        break;
+
+        // nbIt ++;
+        // if(nbIt > 100) {
+        //   break;
+        // }
 
         printf("------------------------DEBUG--------------------------\n");
         printf("nb service affecté : %d\n", liste.nbService);
@@ -186,7 +206,19 @@ void branchBoundIter(Solution* sol) {
         printf("\n");
 
         // relaxation continue
-        int resRelax = relaxationContinue2(sol, &duale);
+        // clock_t relax_begin = clock();
+
+        // int resRelax = relaxationContinue2(sol, &duale);
+
+        // printf("test 1 \n");
+        majGLPKProblemeRelache(glp_prob_relax, sol);
+        int resRelax = solveGLPKProblemeRelache(glp_prob_relax, &duale);
+        // printf("test 2 \n");
+
+
+        // clock_t relax_end = clock();
+        // printf("temps relaxation continue: %f \n", (double)(relax_end-relax_begin) / CLOCKS_PER_SEC);
+
 
         if(sol->nbVarServicesFixees == sol->pb->m && sol->nbVarClientFixees == sol->pb->n) {
 
@@ -242,13 +274,13 @@ void branchBoundIter(Solution* sol) {
 
 
             } else {
-                //printf("La relaxation permet de couper dans la recherche\n");
+                printf("La relaxation permet de couper dans la recherche\n");
                 backtrack(&liste, sol, &best);
             }
 
         } else if(resRelax == 1) { // relaxation entière, vérif et backtrack
 
-            // printf("Relaxation continue donne une solution entière : z = %lf\n", duale.z);
+            printf("Relaxation continue donne une solution entière : z = %lf\n", duale.z);
 
             if(duale.z < best.z) { // une meilleure solution est trouvée, mise à jour
                 copierSolution(&duale, &best);
@@ -258,7 +290,7 @@ void branchBoundIter(Solution* sol) {
 
         } else { // problème impossible
 
-            // printf("La relaxation est un problème impossible\n");
+            printf("La relaxation est un problème impossible\n");
             backtrack(&liste, sol, &best);
 
         }
@@ -278,6 +310,8 @@ void branchBoundIter(Solution* sol) {
 
     detruireSolution(&duale);
     detruireSolution(&best);
+
+    glp_delete_prob(glp_prob_relax); // libération de la mémoire du pb relaché glpk
 
 }
 

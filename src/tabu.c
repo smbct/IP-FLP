@@ -14,8 +14,8 @@
 //------------------------------------------------------------------------------
 void rechercheTabu(Solution* meilleure, int longueurTabu, long tmax) {
 
-    // construction gloutonne
-    //construction(meilleure);
+    // construction gloutonne, une solution initiale est nécessaire
+    construction(meilleure);
 
     // printf("la construction donne z = %lf\n", meilleure->z);
     long tstart = clock(); //pour le critère d'arret
@@ -36,9 +36,9 @@ void rechercheTabu(Solution* meilleure, int longueurTabu, long tmax) {
 
     while(clock() - tstart < tmax*CLOCKS_PER_SEC) {
 
-
         selectionnerVoisin(&sol, meilleure, tabuListe, nbIt, longueurTabu);
         // selectionnerVoisin2(&sol, meilleure, tabuListe, nbIt, longueurTabu);
+
 
         // si la solution actuelle est meilleure que la meilleure trouvée, mise à jour
         if(sol.z < meilleure->z) {
@@ -67,6 +67,7 @@ void selectionnerVoisin(Solution* sol, Solution* meilleure, int** tabuListe, int
     for(int i = 0; i < sol->pb->n; i++) {
 
         for(int j = 0; j < sol->pb->m; j++) {
+
 
             // vérification que le service proposé est différent et la solution reste admissible
             if(j != sol->connexionClient[i] && sol->capaRestantes[j] >= sol->pb->demandes[i]) {

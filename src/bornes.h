@@ -8,6 +8,9 @@
 
 #include "solution.h"
 
+#include <glpk.h>
+#include <time.h>
+
 
 /**
  * \brief construction d'une solution heuristique
@@ -42,5 +45,20 @@ void relaxationCFLP(Solution* sol);
  * \param sol la solution contenant le résultat de la relaxation
  */
 void relaxationUFLP(Solution* sol);
+
+/*!
+ * \brief initialisation d'un pb glpk pour la relaxation continue
+ */
+void initGLPKProblemeRelache(glp_prob* prob, Solution* sol);
+
+/*!
+ * \brief mise à jour d'un problème de relaxation continue à partir d'une solution (sous problème)
+ */
+void majGLPKProblemeRelache(glp_prob* prob, Solution* sol);
+
+/*!
+ * \brief résolution du problème relaché
+ */
+int solveGLPKProblemeRelache(glp_prob* prob, Solution* sol);
 
 #endif
