@@ -182,8 +182,6 @@ void branchBoundIter(Solution* sol) {
 
     while(!listeVide(&liste) && temps < 600.) {
 
-        break;
-
         // nbIt ++;
         // if(nbIt > 100) {
         //   break;
@@ -205,95 +203,107 @@ void branchBoundIter(Solution* sol) {
         }
         printf("\n");
 
-        // relaxation continue
-        // clock_t relax_begin = clock();
-
-        // int resRelax = relaxationContinue2(sol, &duale);
-
-        // printf("test 1 \n");
-        majGLPKProblemeRelache(glp_prob_relax, sol);
-        int resRelax = solveGLPKProblemeRelache(glp_prob_relax, &duale);
-        // printf("test 2 \n");
-
-
-        // clock_t relax_end = clock();
-        // printf("temps relaxation continue: %f \n", (double)(relax_end-relax_begin) / CLOCKS_PER_SEC);
-
-
+        // test si toutes les variables ont été fixées
         if(sol->nbVarServicesFixees == sol->pb->m && sol->nbVarClientFixees == sol->pb->n) {
 
             printf("problème fixé\n");
-            printf("res relaxation : %d\n", resRelax);
+
+            // mise à jour de la meilleure solution trouvée
+            if(sol->z < best.z) {
+              copierSolution(sol, &best);
+            }
+
+            backtrack(&liste, sol, &best);
+
+        } else { // sinon, on borne le noeud courant par relaxation continue (avec warm start)
+
+          // relaxation continue
+          // clock_t relax_begin = clock();
+
+          // int resRelax = relaxationContinue2(sol, &duale);
+
+          // printf("test 1 \n");
+          majGLPKProblemeRelache(glp_prob_relax, sol);
+          int resRelax = solveGLPKProblemeRelache(glp_prob_relax, &duale);
+          // printf("test 2 \n");
+
+
+          // clock_t relax_end = clock();
+          // printf("temps relaxation continue: %f \n", (double)(relax_end-relax_begin) / CLOCKS_PER_SEC);
+
+          printf("Résultat de la relaxation continue : %d, z = %lf\n", resRelax, duale.z);
+
+
+
+          if(resRelax == 0) { // relaxation non entière
+
+              if(duale.z < best.z) {
+
+                  // ajout d'affectation si nécessaire
+                  if(liste.nbService < sol->pb->m) {
+
+
+                      sol->services[liste.nbService] = 0;
+                      sol->nbVarServicesFixees ++; // le service est affecté à 0, pas besoin de modifier z
+                      ajouterService(&liste, liste.nbService);
+
+
+                  } else if(liste.nbClient < sol->pb->n) {
+
+                      // le service n'est pas forcément ouvert, il faut vérifier
+
+                      // recherche d'un service ouvert et qui peut être connecté au cient
+                      int i = 0;
+                      while( (sol->services[i] != 1 || sol->capaRestantes[i] < sol->pb->demandes[liste.nbClient]) && i < sol->pb->m) {
+                          i ++;
+                      }
+
+                      if(i < sol->pb->m) {
+                          sol->connexionClient[liste.nbClient] = i;
+                          sol->nbVarClientFixees ++;
+                          ajouterClient(&liste, liste.nbClient);
+                          liste.dernierClient->valeur = i;
+                          sol->z += sol->pb->liaisons[i][liste.dernierClient->client];
+                          // mise à jour des capacités restantes
+                          sol->capaRestantes[liste.dernierClient->valeur] -= sol->pb->demandes[liste.dernierClient->client];
+                      } else {
+                          // le client ne peut être affecté à aucun service, il faut backtracker
+                          backtrack(&liste, sol, &best);
+                      }
+
+                  } else { // problème fixé, calcul de la solution
+
+                      // vérification de la solution
+                      // ne doit pas arriver par la relaxation
+
+                  }
+
+
+              } else {
+                  printf("La relaxation permet de couper dans la recherche\n");
+                  backtrack(&liste, sol, &best);
+              }
+
+          } else if(resRelax == 1) { // relaxation entière, vérif et backtrack
+
+              printf("Relaxation continue donne une solution entière : z = %lf\n", duale.z);
+
+              if(duale.z < best.z) { // une meilleure solution est trouvée, mise à jour
+                  copierSolution(&duale, &best);
+              }
+              // après ça, backtracking
+              backtrack(&liste, sol, &best);
+
+          } else { // le problème du noeud courant est impossible
+
+              printf("La relaxation est un problème impossible\n");
+              backtrack(&liste, sol, &best);
+
+          }
 
         }
 
-        printf("Résultat de la relaxation continue : %d, z = %lf\n", resRelax, duale.z);
 
-        if(resRelax == 0) { // relaxation non entière
-
-            if(duale.z < best.z) {
-
-                // ajout d'affectation si nécessaire
-                if(liste.nbService < sol->pb->m) {
-
-
-                    sol->services[liste.nbService] = 0;
-                    sol->nbVarServicesFixees ++; // le service est affecté à 0, pas besoin de modifier z
-                    ajouterService(&liste, liste.nbService);
-
-
-                } else if(liste.nbClient < sol->pb->n) {
-
-                    // le service n'est pas forcément ouvert, il faut vérifier
-
-                    // recherche d'un service ouvert et qui peut être connecté au cient
-                    int i = 0;
-                    while( (sol->services[i] != 1 || sol->capaRestantes[i] < sol->pb->demandes[liste.nbClient]) && i < sol->pb->m) {
-                        i ++;
-                    }
-
-                    if(i < sol->pb->m) {
-                        sol->connexionClient[liste.nbClient] = i;
-                        sol->nbVarClientFixees ++;
-                        ajouterClient(&liste, liste.nbClient);
-                        liste.dernierClient->valeur = i;
-                        sol->z += sol->pb->liaisons[i][liste.dernierClient->client];
-                        // mise à jour des capacités restantes
-                        sol->capaRestantes[liste.dernierClient->valeur] -= sol->pb->demandes[liste.dernierClient->client];
-                    } else {
-                        // le client ne peut être affecté à aucun service, il faut backtracker
-                        backtrack(&liste, sol, &best);
-                    }
-
-                } else { // problème fixé, calcul de la solution
-
-                    // vérification de la solution
-                    // ne doit pas arriver par la relaxation
-
-                }
-
-
-            } else {
-                printf("La relaxation permet de couper dans la recherche\n");
-                backtrack(&liste, sol, &best);
-            }
-
-        } else if(resRelax == 1) { // relaxation entière, vérif et backtrack
-
-            printf("Relaxation continue donne une solution entière : z = %lf\n", duale.z);
-
-            if(duale.z < best.z) { // une meilleure solution est trouvée, mise à jour
-                copierSolution(&duale, &best);
-            }
-            // après ça, backtracking
-            backtrack(&liste, sol, &best);
-
-        } else { // problème impossible
-
-            printf("La relaxation est un problème impossible\n");
-            backtrack(&liste, sol, &best);
-
-        }
 
         printf("----------------------FIN DEBUG------------------------\n\n\n\n");
 

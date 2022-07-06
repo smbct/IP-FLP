@@ -907,7 +907,7 @@ int solveGLPKProblemeRelache(glp_prob* prob, Solution* sol) {
           j = 0;
           while(entier && j < pb->n) {
               double val = glp_get_col_prim(prob, i*pb->n+j+1);
-              double dec = val - floor(val);
+              double dec = fabs(val - round(val));
               if(dec > 1e-6) {
                   entier = 0;
               } else if(val >= 0.5) { // x_{ij} = 1 => i connecté à j
@@ -919,6 +919,7 @@ int solveGLPKProblemeRelache(glp_prob* prob, Solution* sol) {
       }
 
       i = 0;
+
       while(entier && i < pb->m) {
           double val = glp_get_col_prim(prob, pb->m*pb->n+i+1);
           double dec = val - floor(val);
